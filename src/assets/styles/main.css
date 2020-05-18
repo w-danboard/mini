@@ -1,0 +1,12 @@
+/* 公共样式 */
+ html,
+ body {
+   font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+   height: 100%;
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   min-width: 1200px;
+   background-color: #fafafa;
+ }
+ 
