@@ -3,7 +3,8 @@ let express = require('express');
 let router = express.Router();
 // 当客户端通过get请求的方式 访问/路径的时候 会交由对应的函数来处理
 router.get('/add', function(req, res) {
-  res.send('添加')
+  console.log(123);
+  res.send('添加');
 });
 
 module.exports = router;
