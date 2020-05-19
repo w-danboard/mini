@@ -10,6 +10,20 @@ let router = express.Router();
  *  4. 保存完毕后跳转登录页
  */
 
+ // 注册
  router.post('/signup', function(req, res) {
      let user = req.body;
+     User.create(user, function(err, doc) {
+        if(err) {
+            cosnoel.log('注册失败了');
+        } else {
+            console.log('注册成功了');
+        }
+     });
+ });
+
+ // 登录
+ router.post('/signin', function(req, res) {
+     let user = req.body;
+
  });
