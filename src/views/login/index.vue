@@ -29,6 +29,7 @@
   </div>
 </template>
 <script>
+import { type } from '@/lib/utils.js';
 export default {
   name: 'app-login',
   data() {
@@ -44,6 +45,9 @@ export default {
     submit() {
       console.log('submit');
     }
+  },
+  mounted() {
+    console.log(type.isArray([]))
   }
 }
 </script>
