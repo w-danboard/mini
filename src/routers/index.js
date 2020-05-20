@@ -3,6 +3,10 @@ import Router from 'vue-router'
 
 Vue.use(Router);
 
+ // 注册
+ const signup = () => 
+ import('@/views/signup/index.vue')
+
  // 登录
  const login = () => 
  import('@/views/login/index.vue')
@@ -22,6 +26,14 @@ const router = new Router({
     {
       path: '*',
       component: exception_404
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: signup,
+      meta: {
+        name: '注册'
+      }
     },
     {
       path: '/login',

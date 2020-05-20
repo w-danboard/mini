@@ -2,14 +2,19 @@ let conf = require('./config/dev.env');
 let bodyParser = require('body-parser');
 let express = require('express');
 let app = express();
-// let add = require('../routes/add.js');
+let user = require('../routes/user.js');
+
+// API
+const API = {
+  USER_URL: '/user'
+};
 
 let opt = {
   port: conf.port,
   proxy: conf.proxy.target
 };
 
-// app.use(add);
+app.use(API.USER_URL, user);  // 用户API
 // 解析客户端提交过来的请求提 并转成对象赋值给req.body
 app.use(bodyParser.urlencoded({ extended: true }));
 app.listen(opt.port);

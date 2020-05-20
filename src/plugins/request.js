@@ -172,7 +172,7 @@ export default {
 			config = config || {};
 			config.headers = config.headers || {};
 			if (!config.ignoreApiPrefix) {
-				config.url = apiPrefix + url;
+				config.url = url;
 			} else {
 				config.url = url;
 			}

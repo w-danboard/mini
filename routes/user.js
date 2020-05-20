@@ -12,18 +12,22 @@ let router = express.Router();
 
  // 注册
  router.post('/signup', function(req, res) {
-     let user = req.body;
-     User.create(user, function(err, doc) {
-        if(err) {
-            cosnoel.log('注册失败了');
-        } else {
-            console.log('注册成功了');
-        }
-     });
+     console.log('1111')
+     res.send('王琳');
+    //  let user = req.body;
+    //  User.create(user, function(err, doc) {
+    //     if(err) {
+    //         console.log('注册失败了');
+    //     } else {
+    //         console.log('注册成功了');
+    //     }
+    //  });
  });
 
  // 登录
- router.post('/signin', function(req, res) {
-     let user = req.body;
+//  router.post(`${BASE_URL}/signin`, function(req, res) {
+//      let user = req.body;
 
- });
+//  });
+
+module.exports = router;
