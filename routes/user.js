@@ -13,14 +13,23 @@ let router = express.Router();
  // 注册
  router.post('/signup', function(req, res) {
      let user = req.body; // 请求体对象{username, password, email}
-     User.create(user, function(err, doc) {
-         if (err) {
-             console.log('err', err);
-         } else {
-             console.log('doc', doc);
-             res.send({code: 1, message: '注册成功!'});
-         }
-     });
+     User.findOne(user, function(err, doc) {
+       if (err) {
+           console.log(err);
+       } else {
+           if (doc) {
+               console.log('doc', doc)
+           }
+       }
+    });
+    //  User.create(user, function(err, doc) { // doc为成功后的请求体
+    //      if (err) {
+    //          console.log('err', err);
+    //      } else {
+    //          console.log('doc', doc);
+    //          res.send({code: 1, message: '注册成功!'});
+    //      }
+    //  });
  });
 
 module.exports = router;
