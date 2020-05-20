@@ -165,7 +165,7 @@ export default {
 		Vue.prototype.$request = function (url, config) {
 			config.timeout = 1000 * 60 * 10
 			// 指定浏览器前缀
-			const apiPrefix = '/api';
+			// const apiPrefix = '/api';
 			// 补充套入 __permission & __log
 			supportRequestParam(this, config);
 			// 请求默认配置
@@ -187,11 +187,11 @@ export default {
 			if (config.data.param && !~config.url.indexOf('/FileItemApi/FileUpLoad')) {
 				config.data.param = encode(JSON.stringify(config.data.param))
 			}
-			if (!!~config.url.indexOf('/FileItemApi/FileUpLoad')) {
-				config.headers = {
-					'Content-Type': 'multipart/form-data;'
-				}
-			}
+			// if (!!~config.url.indexOf('/FileItemApi/FileUpLoad')) {
+			// 	config.headers = {
+			// 		'Content-Type': 'multipart/form-data;'
+			// 	}
+			// }
 			return axios.request(config).then((response) => {
 				// 完成加载后，关闭loading 状态
 				endLoading(loadingInstance, config.loadingEl)

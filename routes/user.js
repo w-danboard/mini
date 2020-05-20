@@ -1,5 +1,5 @@
 let express = require('express');
-let { User}  = require('../model');
+let { User }  = require('../model');
 let router = express.Router();
 
 /**
@@ -12,16 +12,16 @@ let router = express.Router();
 
  // 注册
  router.post('/signup', function(req, res) {
-     console.log('1111')
-     res.send('王琳');
-    //  let user = req.body;
-    //  User.create(user, function(err, doc) {
-    //     if(err) {
-    //         console.log('注册失败了');
-    //     } else {
-    //         console.log('注册成功了');
-    //     }
-    //  });
+     let user = req.body; // 请求体对象{username, password, email}
+     console.log('=====>', User)
+     User.create(user, function(err, doc) {
+         if (err) {
+             console.log('err', err);
+         } else {
+             console.log('doc', doc);
+             res.send({code: 1, message: '注册成功!'});
+         }
+     });
  });
 
  // 登录

@@ -43,8 +43,8 @@ export default {
     return {
       loading: false,
       signupForm: {
-        userName: '',
-        passWord: '',
+        username: '',
+        password: '',
         email: ''
       }
     }
@@ -53,7 +53,7 @@ export default {
     submit() {
       console.log('submit');
       this.$post('/api/user/signup', {
-        data : { a: 1 }
+        data : this.signupForm
       }).then(data => {
         console.log('data===>', data);
       });
