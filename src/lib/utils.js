@@ -1,6 +1,6 @@
 /** 
  * 判断类型 Object.prototype.toString.call();
- *  示例: type.isObject({})
+ *  示例: isType.Object({})
  */
 const types = ['Object', 'Function', 'Boolean', 'Number', 'Array', 'String'];
 let isType = {};
