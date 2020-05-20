@@ -29,7 +29,7 @@
   </div>
 </template>
 <script>
-import { type } from '@/lib/utils.js';
+import { isType } from '@/lib/utils.js';
 export default {
   name: 'app-login',
   data() {
@@ -47,7 +47,7 @@ export default {
     }
   },
   mounted() {
-    console.log(type.isArray([]))
+    console.log(isType.Array([]))
   }
 }
 </script>
