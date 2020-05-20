@@ -3,25 +3,25 @@
     <!-- 登录框 -->
     <div class="signup">
       <!-- model为表单数据对象 -->
-      <el-form ref="signupForm" :model="signupForm" label-width="0">
-        <el-form-item>
+      <el-form ref="signupForm" :rules="rules" :model="signupForm" label-width="0">
+        <el-form-item prop="username">
           <el-input
-            v-model="signupForm.userName"
+            v-model="signupForm.username"
             placeholder="请输入用户名"
             autofocus
             clearable>
           </el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
-            v-model="signupForm.passWord"
+            v-model="signupForm.password"
             type="password"
             placeholder="请输入密码"
             autofocus
             clearable>
           </el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="email">
           <el-input
             v-model="signupForm.email"
             placeholder="请输入邮箱"
@@ -30,7 +30,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button class="large-button" type="primary" :loading="loading" @click="submit">注 册</el-button>
+          <el-button class="large-button" type="primary" :loading="loading" @click="submit('signupForm')">注 册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -46,16 +46,39 @@ export default {
         username: '',
         password: '',
         email: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+        ]
       }
     }
   },
   methods: {
-    submit() {
-      this.$post('/api/user/signup', {
-        data : this.signupForm
-      }).then(data => {
-        console.log('data===>', data);
-      });
+    submit(form) {
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          let signupForm = this.signupForm;
+          let password = this.$md5(signupForm.password);
+          this.$post('/api/user/signup', {
+            data : {
+              ...signupForm,
+              password
+            }
+          }).then(data => {
+            console.log('data===>', data);
+          });
+        } else {
+          console.log('有必填项没有填');
+          return false;
+        }
+      })
     }
   }
 }
