@@ -30,7 +30,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="submit">注 册</el-button>
+          <el-button class="large-button" type="primary" :loading="loading" @click="submit">注 册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -51,7 +51,6 @@ export default {
   },
   methods: {
     submit() {
-      console.log('submit');
       this.$post('/api/user/signup', {
         data : this.signupForm
       }).then(data => {
@@ -62,5 +61,13 @@ export default {
 }
 </script>
 <style lang="postcss" scoped>
-
+  .app-signup {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .signup {
+      width: 380px;
+    }
+  }
 </style>

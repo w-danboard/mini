@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/zh-CN'
 import App from './App.vue'
 import router from './routers'
 
@@ -11,7 +12,7 @@ import Request from './plugins/request.js' //请求封装
 
 Vue.config.productionTip = false
 
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale, size: 'small' })
 Vue.use(Request);
 
 new Vue({

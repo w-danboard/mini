@@ -14,6 +14,10 @@ export default {
 </script>
 <style lang="postcss" scoped>
   .app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 50px;
     line-height: 50px;
     background: #fff;

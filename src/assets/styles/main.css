@@ -8,5 +8,11 @@
    padding: 0;
    min-width: 1200px;
    background-color: #fafafa;
+   overflow-y: hidden;
+ }
+
+ /* 按钮样式 */
+ .large-button {
+   width: 100%;
  }
  

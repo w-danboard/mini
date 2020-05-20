@@ -17,3 +17,11 @@ export default {
   }
 }
 </script>
+<style lang="postcss" scoped>
+#app {
+  width: 100%;
+  height: calc(100% - 50px);
+  overflow-y: auto;
+  margin-top: 50px;
+}
+</style>

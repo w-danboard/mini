@@ -13,7 +13,6 @@ let router = express.Router();
  // 注册
  router.post('/signup', function(req, res) {
      let user = req.body; // 请求体对象{username, password, email}
-     console.log('=====>', User)
      User.create(user, function(err, doc) {
          if (err) {
              console.log('err', err);
@@ -23,11 +22,5 @@ let router = express.Router();
          }
      });
  });
-
- // 登录
-//  router.post(`${BASE_URL}/signin`, function(req, res) {
-//      let user = req.body;
-
-//  });
 
 module.exports = router;
