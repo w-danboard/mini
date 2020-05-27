@@ -1,3 +1,8 @@
 #!/usr/bin/env node
 
-require('../server/server');
+let app = require('../app');
+let port = process.env.PORT || '3000';
+app.set('port', port);
+
+app.listen(port);
+console.log(`服务器已启动开始监听: localhost:${port}`);

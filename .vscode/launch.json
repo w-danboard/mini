@@ -8,7 +8,11 @@
       "type": "node",
       "request": "launch",
       "name": "danboard",
-      "program": "${workspaceFolder}/bin/www"
+      "program": "${workspaceFolder}/bin/www",
+      "env": {
+        "NODE_EVNV": "development",
+        "PORT": 18686,
+      }
     }
   ]
 }

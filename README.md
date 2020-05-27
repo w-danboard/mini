@@ -87,7 +87,11 @@
 ### TODO
 
 ### 知识点
+
 - #!/usr/bin/env node: 
        > bin/www文件首行 这样写会去环境设置寻找node目录 推荐这种写法
-- #!/usr/bin node
+- #!/usr/bin node:
        > 写死了
+
+- process.env:
+       > 获取当前所有的环境变量 包括电脑的和此项目中的
