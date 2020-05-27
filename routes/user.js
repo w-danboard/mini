@@ -1,6 +1,7 @@
 let express = require('express');
 let { User }  = require('../model');
-let router = express.Router();
+// mergeParams: true 从父路由导入params对象（父路由是app）
+let router = express.Router({ mergeParams: true });
 
 /**
  * 用户注册 /user/signup

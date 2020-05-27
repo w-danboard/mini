@@ -2,7 +2,7 @@ let conf = require('./config/dev.env');
 let bodyParser = require('body-parser');
 let express = require('express');
 let app = express();
-let user = require('../routes/user.js');
+let { user } = require('../routes/index');
 
 // API
 const API = {
@@ -14,8 +14,7 @@ let opt = {
   proxy: conf.proxy.target
 };
 
-// 解析 application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // 解析 application/json
 // 解析客户端提交过来的请求提 并转成对象赋值给req.body  (要写在路由前面 不然不生效)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(API.USER_URL, user);  // 用户API
