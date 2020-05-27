@@ -1,5 +1,5 @@
 let express = require('express');
-let { User }  = require('../model');
+let { User }  = require('../db');
 // mergeParams: true 从父路由导入params对象（父路由是app）
 let router = express.Router({ mergeParams: true });
 

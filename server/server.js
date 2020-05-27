@@ -2,7 +2,7 @@ let conf = require('./config/dev.env');
 let bodyParser = require('body-parser');
 let express = require('express');
 let app = express();
-let { user } = require('../routes/index');
+let { user } = require('../controllers');
 
 // API
 const API = {

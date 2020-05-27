@@ -56,19 +56,15 @@
 
 ├── .vscode                     
 ├── ├── launch                  调试后端node代码
-├── config                      webpack构建配置文件
-├── git-hooks                   git提交钩子
-├── logs                        mock的日志文件
-├── mock                        mock的目录
-│   └── charts-demo
+├── controllers                 控制层 node后端接口请求
+├── db                          模型层 连接mongodb && 模型
+├── public                      静态资源 (不会被webpack处理)
+├── server                      后端服务
+│   ├── config                  配置文件
 ├── src                         源码
 │   ├── assets                  静态资源
-│   │   ├── geojson             地图资源
-│   │   │   └── provinces       中国省的地图资源
-│   │   └── icons               图标资源
 │   ├── components              组件目录
-│   │   ├── charts              图表组件
-│   │   └── commons             通用业务组件
+
 │   ├── directive               vue 指令
 │   ├── filters                 vue 过滤器
 │   ├── mixins                  vue mixins
