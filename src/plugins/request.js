@@ -10,11 +10,11 @@ import {
  */
 let parseStatusCode = (vm, data, state) => {
 	// 成功
-	if (state === 0) {
+	if (state === 1) {
 		return data.data
 	}
 	// 失败, 提示错误信息
-	else if (state === 1) {
+	else if (state === 0) {
 		throw vm.$message.error(data.message);
 	}
 	// 登录超时

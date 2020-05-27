@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "danboard",
-      "program": "${workspaceFolder}/server/server"
+      "program": "${workspaceFolder}/bin/www"
     }
   ]
 }

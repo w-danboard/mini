@@ -22,3 +22,5 @@ app.listen(opt.port);
 console.log(`服务器已启动开始监听: localhost:${opt.port}`);
 // let server = require('http').createServer(app);
 // server.listen(18686);
+
+console.log(process.env)

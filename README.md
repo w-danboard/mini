@@ -56,6 +56,8 @@
 
 ├── .vscode                     
 ├── ├── launch                  调试后端node代码
+├── bin                         内部www为执行文件
+│   ├── www                     node项目的入口文件
 ├── controllers                 控制层 node后端接口请求
 ├── db                          模型层 连接mongodb && 模型
 ├── public                      静态资源 (不会被webpack处理)
@@ -83,3 +85,9 @@
 
 
 ### TODO
+
+### 知识点
+- #!/usr/bin/env node: 
+       > bin/www文件首行 这样写会去环境设置寻找node目录 推荐这种写法
+- #!/usr/bin node
+       > 写死了
