@@ -61,8 +61,6 @@
 ├── controllers                 控制层 node后端接口请求
 ├── db                          模型层 连接mongodb && 模型
 ├── public                      静态资源 (不会被webpack处理)
-├── server                      后端服务
-│   ├── config                  配置文件
 ├── src                         源码
 │   ├── assets                  静态资源
 │   ├── components              组件目录
@@ -81,6 +79,7 @@
 │   └── views                   页面
 │        ├── layout             布局
 │        └── demo               demo示例(图表、组件、表格、表单)
+├── app                         后端服务
 └── static                      (预留)
 
 
