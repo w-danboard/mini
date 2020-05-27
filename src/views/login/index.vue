@@ -29,7 +29,6 @@
   </div>
 </template>
 <script>
-import { isType } from '@/lib/utils.js';
 export default {
   name: 'app-login',
   data() {
@@ -43,11 +42,7 @@ export default {
   },
   methods: {
     submit() {
-      console.log('submit');
     }
-  },
-  mounted() {
-    console.log(isType.Array([]))
   }
 }
 </script>

@@ -13,23 +13,35 @@ let router = express.Router();
  // 注册
  router.post('/signup', function(req, res) {
      let user = req.body; // 请求体对象{username, password, email}
-     User.findOne(user, function(err, doc) {
+     // 查看当前数据库中的所有用户 便于判断当前注册用户名是否重复
+     User.find({}, function(err, doc) {
        if (err) {
-           console.log(err);
+           res.send({
+               code: 0,
+               message: err
+           })
        } else {
            if (doc) {
-               console.log('doc', doc)
+               let isHas = doc.some(item => item.username === user.username);  // 查看数据库是否含有当前注册用户名
+               if (isHas) {
+                   res.send({
+                       code: 0,
+                       message: '用户名已存在!'
+                   })
+               } else {
+                   // 创建用户
+                   User.create(user, function(err, doc) { // doc为成功后的请求体
+                        if (!err) {
+                            res.send({
+                                code: 1, 
+                                message: '注册成功!'
+                            });
+                        }
+                   });
+               }
            }
        }
     });
-    //  User.create(user, function(err, doc) { // doc为成功后的请求体
-    //      if (err) {
-    //          console.log('err', err);
-    //      } else {
-    //          console.log('doc', doc);
-    //          res.send({code: 1, message: '注册成功!'});
-    //      }
-    //  });
  });
 
 module.exports = router;
