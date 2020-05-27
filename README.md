@@ -47,6 +47,8 @@
 
         - mac启动数据库: sudo mongod --config /usr/local/etc/mongod.conf
 
+        - windows启动数据库：进入mongodb的安装文件 比如D:\Mongodb\bin 在url输入cmd 执行mongod --dbpath=./data
+
         - 查看端口被占用情况: lsof -i:[port] 
 
         - 杀死被占用的端口: kill -9 [PID]
