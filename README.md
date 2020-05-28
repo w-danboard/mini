@@ -99,3 +99,6 @@
 
 - window.navigator.onLine
        > 查看是否断网
+
+- res.sendStatus(403); res.status(500);
+       > 设置状态码

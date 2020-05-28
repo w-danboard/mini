@@ -70,7 +70,11 @@ export default {
             ...signupForm,
             password
           }).then(data => {
-            console.log('data===>', data);
+            if (data.code === 1) {
+              this.$router.push('/login');
+            } else {
+              this.$message.error(data.message || '注册失败！');
+            }
           });
         } else {
           return false;

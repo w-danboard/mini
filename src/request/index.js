@@ -48,7 +48,7 @@ const errorHandle = (status, other) => {
 axios.defaults.timeout = 1000 * 60 * 10;
 
 // post请求头的设置
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
 /**
  * 请求拦截
@@ -91,6 +91,7 @@ axios.interceptors.response.use(
       // network状态在app.vue中控制着一个全局的断网提示组件的显示隐藏
       // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
       if (!window.navigator.onLine) {
+         console.log('断网了')
          store.commit('changeNetwork', false);
       } else {
           return Promise.reject(error);
