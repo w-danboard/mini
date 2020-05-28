@@ -65,7 +65,7 @@ export default {
               message: '恭喜你，登录成功',
               type: 'success'
             });
-              // this.$router.push('/login');
+              this.$router.push('/index');
             } else {
               this.$message.error(data.message || '登录失败！');
             }
