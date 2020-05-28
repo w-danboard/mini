@@ -1,7 +1,9 @@
 // mongoose是一个ORM工具 就是对象模型 工具 可以让我们像操作对象一样操作数据库
 let mongoose = require('mongoose');
-let User = require('./user');
-let DB_URL = 'mongodb://127.0.0.1/school';  // 数据库地址
+// 数据库地址
+let DB_URL = 'mongodb://127.0.0.1/school'; 
+
+let User = require('./user'); // 用户模型
 
 mongoose.connect(DB_URL);
 

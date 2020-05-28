@@ -96,3 +96,6 @@
 
 - process.env:
        > 获取当前所有的环境变量 包括电脑的和此项目中的
+
+- window.navigator.onLine
+       > 查看是否断网

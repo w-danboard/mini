@@ -66,16 +66,13 @@ export default {
         if (valid) {
           let signupForm = this.signupForm;
           let password = this.$md5(signupForm.password);
-          this.$post('/api/user/signup', {
-            data : {
-              ...signupForm,
-              password
-            }
+          this.$request.post('/api/user/signup', {
+            ...signupForm,
+            password
           }).then(data => {
             console.log('data===>', data);
           });
         } else {
-          console.log('有必填项没有填');
           return false;
         }
       })
