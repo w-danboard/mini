@@ -39,4 +39,29 @@ let router = express.Router({ mergeParams: true });
     });
  });
 
+ // 登录
+ router.post('/login', function(req, res) {
+     let user = req.body;
+     User.findOne(user, function(err, doc) {
+         if (err) {
+             res.send({
+                 code: 0,
+                 message: err
+             })
+         } else {
+             if (doc) {
+                 res.send({
+                     code: 1,
+                     message: '登录成功！'
+                 })
+             } else {
+                 res.send({
+                     code: 0,
+                     message: '用户名或密码错误，请重新登录！'
+                 })
+             }
+         }
+     });
+ });
+
 module.exports = router;
