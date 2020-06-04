@@ -24,6 +24,7 @@ export default {
         });
           this.$router.push('/login');
         } else {
+          this.loading = false;
           this.$message.error(data.message || '注册失败！');
         }
       });

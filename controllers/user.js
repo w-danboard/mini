@@ -1,4 +1,5 @@
 let express = require('express');
+let jwt = require('jsonwebtoken');
 let { User }  = require('../db');
 // mergeParams: true 从父路由导入params对象（父路由是app）
 let router = express.Router({ mergeParams: true });
@@ -27,6 +28,7 @@ let router = express.Router({ mergeParams: true });
                    // 创建用户
                    User.create(user, function(err, doc) { // doc为成功后的请求体
                         if (!err) {
+                            res.status(201); // 创建 新增 状态码为201
                             res.send({
                                 code: 0, 
                                 message: '注册成功!'
@@ -52,7 +54,10 @@ let router = express.Router({ mergeParams: true });
              if (doc) {
                  res.send({
                      code: 0,
-                     message: '登录成功！'
+                     message: '登录成功！',
+                     token: jwt.sign({ username: user.username }, 'danboard', { // 'danboard' 说是令牌反解啥的 没懂啊
+                         expiresIn: 20  // 20ms失效
+                     })
                  })
              } else {
                  res.send({

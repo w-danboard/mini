@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getLocal } from '@/lib/local';
 
 class AjaxRequest {
   constructor (vm) {
@@ -64,7 +65,7 @@ class AjaxRequest {
   setInterceptor (instance) {
     // [请求拦截]
     instance.interceptors.request.use(config => {
-      config.headers.Authorization = 'xxx';
+      config.headers.Authorization = getLocal('token');
       return config;
     }, error => {
       return Promise.error(error);
