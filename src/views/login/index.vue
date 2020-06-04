@@ -30,8 +30,10 @@
   </div>
 </template>
 <script>
+import api from './api/index';
 export default {
   name: 'app-login',
+  mixins: [ api ],
   data() {
     return {
       loading: false,
@@ -51,30 +53,15 @@ export default {
   },
   methods: {
     submit(form) {
-      this.$refs[form].validate(valid => {
+      this.$refs[form].validate(async valid => {
         if (valid) {
           let loginForm = this.loginForm;
           let password = this.$md5(loginForm.password);
           this.loading = true;
-          this.$request({
-            url: '/api/user/login',
-            method: 'POST',
-            data: {
-              ...loginForm,
+          await this.login({
+            ...loginForm,
               password
-            }
-          }).then(data => {
-            this.loading = false;
-            if (data.code === 0) {
-              this.$message({
-              message: '恭喜你，登录成功',
-              type: 'success'
-            });
-              this.$router.push('/index');
-            } else {
-              this.$message.error(data.message || '登录失败！');
-            }
-          });
+          })
         } else {
           return false;
         }

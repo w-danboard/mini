@@ -63,14 +63,14 @@ class AjaxRequest {
    */
   setInterceptor (instance) {
     // [请求拦截]
-    instance.interceptor.request.use(config => {
+    instance.interceptors.request.use(config => {
       config.headers.Authorization = 'xxx';
       return config;
     }, error => {
       return Promise.error(error);
     })
     // [响应拦截]
-    instance.interceptor.response.use(
+    instance.interceptors.response.use(
       res => /^2\d{2}$/.test(res.status) ? Promise.resolve(res.data) : Promise.reject(res.data),
       error => {
         const { response } = error;
@@ -100,7 +100,7 @@ class AjaxRequest {
    */
   request (options) {
     let instance = axios.create(); // 官方提供的方法 通过axios库 创建一个axios
-    this.setInterceptor(instance);; // 拦截器
+    this.setInterceptor(instance); // 拦截器
     let config = this.merge(options);
     return instance(config);  // axios执行后 返回的是promiser
   }
@@ -108,6 +108,7 @@ class AjaxRequest {
 
 export default {
 	install: function (Vue) {
-		Vue.prototype.$request = new AjaxRequest(this)
+    const r = new AjaxRequest(this);
+    Vue.prototype.$request = r.request.bind(r);
 	}
 }

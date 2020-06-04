@@ -40,6 +40,7 @@
     "postcss-preset-env": "^6.5.0",
     "postcss-url": "^8.0.0",
     "precss": "^4.0.0",
+    "vue-mixins": "^0.3.6",
     "vue-template-compiler": "^2.6.11",
     "vuex": "^3.4.0"
   },

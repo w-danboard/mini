@@ -38,8 +38,10 @@
   </div>
 </template>
 <script>
+import api from './api/index';
 export default {
   name: 'app-signup',
+  mixins: [ api ],
   data() {
     return {
       loading: false,
@@ -63,26 +65,15 @@ export default {
   },
   methods: {
     submit(form) {
-      this.$refs[form].validate(valid => {
+      this.$refs[form].validate(async valid => {
         if (valid) {
           let signupForm = this.signupForm;
           let password = this.$md5(signupForm.password);
           this.loading = true;
-          this.$request.post('/api/user/signup', {
+          await this.signup({
             ...signupForm,
             password
-          }).then(data => {
-            this.loading = false;
-            if (data.code === 0) {
-              this.$message({
-              message: '恭喜你，注册成功',
-              type: 'success'
-            });
-              this.$router.push('/login');
-            } else {
-              this.$message.error(data.message || '注册失败！');
-            }
-          });
+          })
         } else {
           return false;
         }
