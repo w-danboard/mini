@@ -15,6 +15,11 @@ Vue.use(Router);
  const index = () => 
  import('@/views/index.vue')
 
+
+// 主页面
+const main = () => 
+import('@/views/main.vue')
+
  // 页面不存在
 const exception_404 = () =>
 import('@/views/exception/exception_404.vue')
@@ -48,12 +53,22 @@ const router = new Router({
       }
     },
     {
-      path: '/index',
-      name: index,
-      component: () => import('@/views/index.vue'),
+      path: '/main',
+      name: '主页面',
+      component: main,
       meta: {
-        title: '首页'
-      }
+        name: '主页面'
+      },
+      children: [
+        {
+          path: '/index',
+          name: index,
+          component: () => import('@/views/index.vue'),
+          meta: {
+            title: '首页'
+          }
+        }
+      ]
     },
     {
       path: '/exception_404',
