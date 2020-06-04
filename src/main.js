@@ -5,7 +5,6 @@ import VueProgressBar from 'vue-progressbar'
 import md5 from 'js-md5'
 import App from './App.vue'
 import router from './routers'
-// import axios from './request'
 
 // 引入样式
 import '@/assets/styles/main.css' 			        // 公共样式
@@ -14,7 +13,6 @@ import 'element-ui/lib/theme-chalk/index.css'   // elment-ui 样式
 import Request from './request' //请求封装
 
 Vue.prototype.$md5 = md5;
-// Vue.prototype.$request = axios;
 
 Vue.config.productionTip = false
 

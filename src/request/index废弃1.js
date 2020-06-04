@@ -162,6 +162,7 @@ let encode = (str) => {
 
 export default {
 	install: function (Vue) {
+		console.log('===>', Vue, this)
 		Vue.prototype.$request = function (url, config) {
 			config.timeout = 1000 * 60 * 10
 			// 指定浏览器前缀

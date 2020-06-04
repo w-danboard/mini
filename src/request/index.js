@@ -25,12 +25,12 @@ class AjaxRequest {
    * @param status 状态码
    * @param other 除以下状态码外的其他
    */
-errorHandle (status, other) {
-  // 状态码判断
-  switch (status) {
-    // 401: 未登录状态，跳转登录页
-    case 401:
-      this.toLogin();
+  errorHandle (status, other) {
+    // 状态码判断
+    switch (status) {
+      // 401: 未登录状态，跳转登录页
+      case 401:
+        this.toLogin();
       break;
       // 403 token过期
       // 清除token并跳转登录页
@@ -106,9 +106,8 @@ errorHandle (status, other) {
   }
 }
 
-// export default new AjaxRequest;
 export default {
-  install: function (Vue) {
-    Vue.prototype.$request = new AjaxRequest(this)
-  }
+	install: function (Vue) {
+		Vue.prototype.$request = new AjaxRequest(this)
+	}
 }
