@@ -19,8 +19,8 @@ Vue.prototype.$request = axios;
 Vue.config.productionTip = false
 
 Vue.use(VueProgressBar, {
-  color: '#3eb1fc',
-  failedColor: '#f8d14a',
+  color: '#409eff',
+  failedColor: '#f56b6c',
   height: '20px'
 })
 
