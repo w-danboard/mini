@@ -1,102 +1,114 @@
-import axios from 'axios';
-import { Message } from 'element-ui';
-import store from '@/store/index';
-import router from '../routers'
+import axios from 'axios'
 
-/**
- * 跳转登录页
- * 携带当前页面路由 在登录页面完成登录后返回当前页面
- */
-const toLogin = () => {
-  router.replace({
-    path: '/login',        
-    query: {
-        redirect: router.currentRoute.fullPath
-    }
-  })
-}
+class AjaxRequest {
+  constructor (vm) {
+    this.vm = vm
+    // this.baseURL = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:3000';  // 请求路径
+    this.timeout = 1000 * 60 * 10; // 超时时间
+  }
 
-/**
- * 请求失败后的错误统一处理
- * @param {Number} status 请求失败的状态码
- */
-const errorHandle = (status, other) => {
+  /**
+   * 跳转登录页 携带当前页面路由 在登录页完成登录后返回当前页面
+   * @param
+   */
+  toLogin () {
+    this.vm.$router.replace({
+      path: '/login',
+      query: {
+        redirect: this.vm.$router.currentRoute.fullPath
+      }
+    })
+  }
+
+  /**
+   * 请求失败后的错误统一处理
+   * @param status 状态码
+   * @param other 除以下状态码外的其他
+   */
+errorHandle (status, other) {
   // 状态码判断
   switch (status) {
     // 401: 未登录状态，跳转登录页
     case 401:
-        toLogin();
-        break;
-    // 403 token过期
-    // 清除token并跳转登录页
-    case 403:
-        Message.error('登录过期，请重新登录');
+      this.toLogin();
+      break;
+      // 403 token过期
+      // 清除token并跳转登录页
+      case 403:
+        this.vm.$message.error('登录过期，请重新登录');
         localStorage.removeItem('token');
-        store.commit('loginSuccess', null);
-        toLogin();
+        // store.commit('loginSuccess', null);
+        this.toLogin();
         break;
-    // 404请求不存在
-    case 404:
-        Message.error('请求的资源不存在'); 
+      // 404请求不存在
+      case 404:
+        this.vm.$message.error('请求的资源不存在'); 
         break;
-    default:
+      default:
         console.log('other===>', other);   
     }
   }
 
-// 请求超时 例如超过10s 就会告知用户当前请求超时
-axios.defaults.timeout = 1000 * 60 * 10;
-
-// post请求头的设置
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-
-/**
- * 请求拦截
- *  为什么要拦截？
- *  比如，有些请求是需要用户登录之后才能访问的，或者post请求的时候，我们需要序列化我们提交的数据
- *  这时候，我们可以再请求被发送之前进行一个拦截，从而进行我们想要的操作
- */
-
- // 导入vuex 使用里面的状态  import store from '@/store/index';
-
- // 请求拦截器
- axios.interceptors.request.use(
-   config => {
-     // 每次发送请求之前 判断vuex中是否存在token
-     // 如果存在 则统一在http请求的header都加上token 这样后台根据token判断你的登录情况
-     // 即使本地存在token 也有可能token是过期的 所以在响应拦截中要对返回状态进行判断
-     const token = store.state.token;
-     token && (config.headers.Authorization = token);
-     return config;
-   },
-   error => {
-    return Promise.error(error);
-});
-
-// 响应拦截器
-axios.interceptors.response.use(
-  res => res.status === 200 ? Promise.resolve(res.data) : Promise.reject(res.data),
-  error => {
-    // 服务器状态码不是2开头的情况
-    // 可以和后台协商统一错误状态码
-    // 然后根据返回的状态码进行一些操作 例如登录过期提示 错误提示等等
-    const { response } = error;
-    if (response) {
-      // 请求已发出，但是不在2xx的范围 
-      errorHandle(response.status, response.data.message);
-      return Promise.reject(response);
-  } else {
-      // 处理断网的情况
-      // eg:请求超时或断网时，更新state的network状态
-      // network状态在app.vue中控制着一个全局的断网提示组件的显示隐藏
-      // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
-      if (!window.navigator.onLine) {
-         console.log('断网了')
-         store.commit('changeNetwork', false);
-      } else {
-          return Promise.reject(error);
-      }
+  /**
+   * 合并请求参数
+   * @param options 参数 
+   */
+  merge (options) {
+    return {...options, timeout: this.timeout}
   }
-});
 
-export default axios;
+  /**
+   * 设置拦截器
+   * @param instance 官方提供的方法 通过axios库 创建一个axios
+   */
+  setInterceptor (instance) {
+    // [请求拦截]
+    instance.interceptor.request.use(config => {
+      config.headers.Authorization = 'xxx';
+      return config;
+    }, error => {
+      return Promise.error(error);
+    })
+    // [响应拦截]
+    instance.interceptor.response.use(
+      res => /^2\d{2}$/.test(res.status) ? Promise.resolve(res.data) : Promise.reject(res.data),
+      error => {
+        const { response } = error;
+        if (response) {
+          // 请求已发出，但是不在2xx的范围 
+          this.errorHandle(response.status, response.data.message);
+          return Promise.reject(response);
+        } else {
+          // 处理断网的情况
+          // eg:请求超时或断网时，更新state的network状态
+          // network状态在app.vue中控制着一个全局的断网提示组件的显示隐藏
+          // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
+          if (!window.navigator.onLine) {
+            console.log('断网了')
+            // store.commit('changeNetwork', false);
+          } else {
+              return Promise.reject(error);
+          }
+        }
+      }
+    )
+  }
+
+  /**
+   * 请求方法 如果上一个promise 返回一个常量 会作为下一个promise的输入
+   * @param options url method 等等参数
+   */
+  request (options) {
+    let instance = axios.create(); // 官方提供的方法 通过axios库 创建一个axios
+    this.setInterceptor(instance);; // 拦截器
+    let config = this.merge(options);
+    return instance(config);  // axios执行后 返回的是promiser
+  }
+}
+
+// export default new AjaxRequest;
+export default {
+  install: function (Vue) {
+    Vue.prototype.$request = new AjaxRequest(this)
+  }
+}

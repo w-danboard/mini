@@ -56,9 +56,13 @@ export default {
           let loginForm = this.loginForm;
           let password = this.$md5(loginForm.password);
           this.loading = true;
-          this.$request.post('/api/user/login', {
-            ...loginForm,
-            password
+          this.$request({
+            url: '/api/user/login',
+            method: 'POST',
+            data: {
+              ...loginForm,
+              password
+            }
           }).then(data => {
             this.loading = false;
             if (data.code === 0) {
