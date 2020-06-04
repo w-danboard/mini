@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "npm run serve",
-    "server": "./node_modules/.bin/nodemon server/server.js",
+    "server": "./node_modules/.bin/nodemon bin/www",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
@@ -17,6 +17,7 @@
     "export-dirs": "^0.2.4",
     "express": "^4.17.1",
     "js-md5": "^0.7.3",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.15",
     "pm2": "^4.4.0",
     "postcss-mixins": "^6.2.3",

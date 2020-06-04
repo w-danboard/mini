@@ -11,7 +11,7 @@ let router = express.Router({ mergeParams: true });
      User.find({}, function(err, doc) {
        if (err) {
            res.send({
-               code: 0,
+               code: 1,
                message: err
            })
        } else {
@@ -20,7 +20,7 @@ let router = express.Router({ mergeParams: true });
                let isHas = doc.some(item => item.username === user.username); 
                if (isHas) {
                    res.send({
-                       code: 0,
+                       code: 1,
                        message: '用户名已存在!'
                    })
                } else {
@@ -28,7 +28,7 @@ let router = express.Router({ mergeParams: true });
                    User.create(user, function(err, doc) { // doc为成功后的请求体
                         if (!err) {
                             res.send({
-                                code: 1, 
+                                code: 0, 
                                 message: '注册成功!'
                             });
                         }
@@ -45,18 +45,18 @@ let router = express.Router({ mergeParams: true });
      User.findOne(user, function(err, doc) {
          if (err) {
              res.send({
-                 code: 0,
+                 code: 1,
                  message: err
              })
          } else {
              if (doc) {
                  res.send({
-                     code: 1,
+                     code: 0,
                      message: '登录成功！'
                  })
              } else {
                  res.send({
-                     code: 0,
+                     code: 1,
                      message: '用户名或密码错误，请重新登录！'
                  })
              }

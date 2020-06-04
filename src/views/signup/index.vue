@@ -2,6 +2,7 @@
   <div class="app-signup">
     <!-- 登录框 -->
     <div class="signup">
+      我是好丑的注册页啊 咋办啊~~~~
       <!-- model为表单数据对象 -->
       <el-form ref="signupForm" :rules="rules" :model="signupForm" label-width="0">
         <el-form-item prop="username">
@@ -72,7 +73,7 @@ export default {
             password
           }).then(data => {
             this.loading = false;
-            if (data.code === 1) {
+            if (data.code === 0) {
               this.$message({
               message: '恭喜你，注册成功',
               type: 'success'

@@ -11,7 +11,70 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app">
+      <style>
+        .loading {
+          position: absolute;
+          top: 42%;
+          left: 50%;
+          width: 50px;
+          height: 51px;
+          border: 6px solid;
+          border-top-color: #f8d049;
+          border-left-color: #45a8df;
+          border-bottom-color: #f04c98;
+          border-right-color: #f27037;
+          border-radius: 50%;
+          transform: translate(-50%, -50%) rotate(45deg);
+          margin: 30px auto;
+        }
+    
+        .loading p {
+          position: relative;
+          display: inline-block;
+          width: 57px;
+          height: 57px;
+          background: linear-gradient(90deg, hsla(212, 67%, 36%, 0) 0%,
+          hsla(207, 69%, 51%, 0) 71%,
+          hsla(0, 0%, 100%, 1) 80%,
+          hsla(0, 0%, 100%, 1) 100%);
+          -moz-background-origin: border;
+          background-origin: border-box;
+          border: 6px solid transparent;
+          border-radius: 50%;
+          box-shadow: inset -999px 0 0 #fff;
+          transform: translate(-8px, 55px);
+          animation: loading 1s linear infinite;
+        }
+    
+        @keyframes loading {
+          0% {
+            transform: translate(-9px, -25px) rotate(0deg);
+          }
+          100% {
+            transform: translate(-9px, -25px) rotate(360deg);
+          }
+        }
+    
+        /* 文本 */
+        .loading-text {
+          position: absolute;
+          top: 42%;
+          left: 50%;
+          width: 50px;
+          height: 51px;
+          text-align: center;
+          margin-top: 42px;
+          transform: translate(-50%, -50%);
+        }
+      </style>
+      <div class="loading">
+        <p></p>
+      </div>
+      <div class="loading-text">
+        哈哈哈~
+      </div>
+    </div>
     <!-- built files will be auto injected -->
   </body>
 </html>
