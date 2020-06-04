@@ -15,6 +15,10 @@ Vue.use(Router);
  const index = () => 
  import('@/views/index.vue')
 
+  // 测试
+  const test = () => 
+  import('@/views/test.vue')
+
 
 // 主页面
 const main = () => 
@@ -66,6 +70,14 @@ const router = new Router({
           component: () => import('@/views/index.vue'),
           meta: {
             title: '首页'
+          }
+        },
+        {
+          path: '/test',
+          name: test,
+          component: () => import('@/views/test.vue'),
+          meta: {
+            title: '测试'
           }
         }
       ]

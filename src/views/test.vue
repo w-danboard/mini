@@ -1,7 +1,7 @@
 <template>
   <div>
-    首页
-    <el-button @click="$router.push('/test')">add</el-button>
+    测试
+    <el-button @click="$router.push('/index')">remove</el-button>
   </div>
 </template>
 <script>
