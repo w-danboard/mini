@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "npm run serve",
-    "server": "./node_modules/.bin/nodemon bin/www",
+    "server": "nodemon bin/www",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
@@ -23,6 +23,7 @@
     "postcss-mixins": "^6.2.3",
     "qs": "^6.9.4",
     "vue": "^2.6.11",
+    "vue-grid-layout": "^2.3.7",
     "vue-progressbar": "^0.7.5",
     "vue-router": "^3.1.6"
   },

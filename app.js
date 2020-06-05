@@ -17,4 +17,6 @@ app.use(API.USER_URL, user);  // 用户API
 // let server = require('http').createServer(app);
 // server.listen(18686);
 
+console.log(process.env, '====')
+
 module.exports = app;

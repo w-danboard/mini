@@ -1,7 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { setLocal } from '@/lib/local';
 
 Vue.use(Router);
+
+// 验证是否登录过
+ const validate = async () => {
+   console.log('===>', this)
+  let res = await this.$request({
+    url: '/api/user/validate',
+    method: 'GET'
+  })
+  if (res.code === 0) {
+    setLocal('token', res.token);
+  };
+  return res.code === 0; // 返回用户是否失效
+ }
 
  // 注册
  const signup = () => 
@@ -58,7 +72,7 @@ const router = new Router({
     },
     {
       path: '/main',
-      name: '主页面',
+      name: 'main',
       component: main,
       meta: {
         name: '主页面'
@@ -92,5 +106,17 @@ const router = new Router({
     }
   ]
 })
+
+/**
+ * 主要用来拦截路由的钩子
+ * @param to Router 即将要进入的目标 路由对象
+ * @param from Router 当前导航正要离开的路由
+ * @param mext Router 一定要调用改方法来 resolve 这个钩子
+ */
+router.beforeEace(async (to, from, next) => {
+  
+  next();
+});
+
 
 export default router

@@ -10,7 +10,7 @@
       "name": "danboard",
       "program": "${workspaceFolder}/bin/www",
       "env": {
-        "NODE_EVNV": "development",
+        "NODE_ENV": "development",
         "PORT": 18686
       }
     }
