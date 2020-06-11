@@ -1,6 +1,8 @@
 let express = require('express');
 let jwt = require('jsonwebtoken');
 let { User }  = require('../db');
+let multer = require('multer');
+let uploads = multer({dest: './public/uploads'});
 // mergeParams: true 从父路由导入params对象（父路由是app）
 let router = express.Router({ mergeParams: true });
 
@@ -91,6 +93,11 @@ let secret = 'danboard';
             })
         }
      })
+ })
+
+ // 上传
+ router.post('/uploads', uploads.single('avatar'), (req, res) => {
+     console.log(req, res)
  })
 
 module.exports = router;

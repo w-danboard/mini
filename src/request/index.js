@@ -66,6 +66,7 @@ class AjaxRequest {
     // [请求拦截]
     instance.interceptors.request.use(config => {
       config.headers.Authorization = getLocal('token');
+      config.headers['Content-Type'] = 'multipart/form-data'
       return config;
     }, error => {
       return Promise.error(error);
