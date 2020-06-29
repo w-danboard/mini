@@ -30,6 +30,7 @@ export default {
       console.log('我要取消eslint-loader, 传参数不使用还不行， 啥玩意啊~~~', to, from);
       this.$Progress.finish()
     })
+    console.log(this.$children[0])
   }
 }
 </script>

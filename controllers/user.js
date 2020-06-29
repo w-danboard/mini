@@ -1,12 +1,16 @@
 let express = require('express');
 let jwt = require('jsonwebtoken');
 let { User }  = require('../db');
-let multer = require('multer');
-let uploads = multer({dest: './public/uploads'});
+// let multer = require('multer');
+// let uploads = multer({dest: './public/uploads'});
+const multipart = require('connect-multiparty')
+const multipartyMiddleware = multipart()
+
 // mergeParams: true 从父路由导入params对象（父路由是app）
 let router = express.Router({ mergeParams: true });
 
 let secret = 'danboard';
+
 
 
  // 注册
@@ -96,8 +100,12 @@ let secret = 'danboard';
  })
 
  // 上传
- router.post('/uploads', uploads.single('avatar'), (req, res) => {
+ router.post('/uploads', multipartyMiddleware, (req, res) => {
      console.log(req, res)
+     res.send({
+        code: 0,
+        files: req.files
+    })
  })
 
 module.exports = router;
