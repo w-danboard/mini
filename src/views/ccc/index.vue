@@ -2,6 +2,7 @@
 <template>
   <div class="idss-count-down">
     <div class="wrap">
+      <!-- separate样式是 props设置theme时显示的 也就是不分割 -->
       <div :class="['flex', {'separate': theme !== true}]">
         <div
           class="time-title"
@@ -9,6 +10,7 @@
           v-if="!!name">
           {{name}}
         </div>
+        <!-- 假如theme是默认值false  也就是["0", "0", "0", "0", "0", "0", "0", "0"] -->
         <template v-for="(item, index) in timeArr">
           <div
             class="time-box"
@@ -138,7 +140,7 @@ export default {
     return {
       timeArr: this.theme ? new Array(4).fill('00') : new Array(8).fill('0'),
       timeArrT: this.theme ? new Array(4).fill('00') : new Array(8).fill('0'),
-      isAnimate: this.theme ? new Array(4).fill(false) : new Array(8).fill(false)
+      isAnimate: this.theme ? new Array(4).fill(false) : new Array(8).fill(false) // 也就是默认是没有动画的
     }
   },
   methods: {
@@ -152,33 +154,41 @@ export default {
 
         /* 时间精度 */
         const type = this.getType(this.type)
-        if (type >= 4) {
-          d = Math.floor(t / 1000 / 60 / 60 / 24)
-          h = Math.floor(t / 1000 / 60 / 60 % 24)
-          m = Math.floor(t / 1000 / 60 % 60)
-          s = Math.floor(t / 1000 % 60)
-        } else if (type >= 3) {
-          h = Math.floor(t / 1000 / 60 / 60)
-          m = Math.floor(t / 1000 / 60 % 60)
-          s = Math.floor(t / 1000 % 60)
-        } else if (type >= 2) {
-          m = Math.floor(t / 1000 / 60)
-          s = Math.floor(t / 1000 % 60)
-        } else {
-          s = Math.floor(t / 1000)
+        console.log(type, '===>')
+        switch (type) {
+          case 5:
+            d = Math.floor(t / 1000 / 60 / 60 / 24)
+            break
+          case 4:
+            d = Math.floor(t / 1000 / 60 / 60 / 24)
+            h = Math.floor(t / 1000 / 60 / 60 % 24)
+            m = Math.floor(t / 1000 / 60 % 60)
+            s = Math.floor(t / 1000 % 60)
+            break
+          case 3:
+            h = Math.floor(t / 1000 / 60 / 60)
+            m = Math.floor(t / 1000 / 60 % 60)
+            s = Math.floor(t / 1000 % 60)
+            break
+          case 2:
+            m = Math.floor(t / 1000 / 60)
+            s = Math.floor(t / 1000 % 60)
+            break
+          default:
+            s = Math.floor(t / 1000)
         }
 
         /* 判断主题 */
         let arr = []
         if (this.theme) {
-          type >= 4 && arr.push(String(d).padStart(2, '0'))
-          type >= 3 && arr.push(String(h).padStart(2, '0'))
-          type >= 2 && arr.push(String(m).padStart(2, '0'))
+          type === 4 && arr.push(String(d).padStart(2, '0'))
+          type === 3 && arr.push(String(h).padStart(2, '0'))
+          type === 2 && arr.push(String(m).padStart(2, '0'))
           arr.push(String(s).padStart(2, '0'))
         } else {
-          type >= 4 && arr.push(...String(d).padStart(2, '0').split(''))
-          type >= 3 && arr.push(...String(h).padStart(2, '0').split(''))
-          type >= 2 && arr.push(...String(m).padStart(2, '0').split(''))
+          type === 4 && arr.push(...String(d).padStart(2, '0').split(''))
+          type === 3 && arr.push(...String(h).padStart(2, '0').split(''))
+          type === 2 && arr.push(...String(m).padStart(2, '0').split(''))
           arr.push(...String(s).padStart(2, '0').split(''))
         }
         this.timeArr = arr
@@ -225,18 +235,21 @@ export default {
       }
     },
     /* 转换时间精度 */
-    getType (type) {
+    getType (type) { // 时间已有变化 就调这里 太恶心了。。。。。 能不能用到的时候才调 晕
       type = type.replace(/\s*/g, '')
-      if (type === 'ddhh:mm:ss') {
-        type = 4
-      } else if (type === 'hh:mm:ss') {
-        type = 3
-      } else if (type === 'mm:ss') {
-        type = 2
-      } else {
-        type = 1
+      console.log(type)
+      switch (type) {
+        case 'dd':
+          return 5
+        case 'ddhh:mm:ss':
+          return 4
+        case 'hh:mm:ss':
+          return 3
+        case 'mm:ss':
+          return 2
+        default:
+          return 1
       }
-      return type
     }
   },
   beforeDestroy () {
@@ -244,13 +257,20 @@ export default {
     clearTimeout(this.watchTimer)
   }
 }
+
+/**
+ * 存在问题
+ * --------props
+ * name 目前没什么问题
+ * background 目前没什么问题
+ */
 </script>
 
 <style scoped lang="postcss">
 
   .idss-count-down {
     color: #fff;
-    background: pink;
+    /* background: pink; */
 
     font-family: Avenir,Helvetica,Arial,sans-serif;
     -webkit-font-smoothing: antialiased;

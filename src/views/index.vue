@@ -14,7 +14,11 @@
       <el-button class="btn" size="small" type="primary" @click="upload">确定上传2</el-button>
     </el-form>
     <br/>
-    <haha></haha>
+    <haha
+      name="我是标题啊啊啊啊啊啊啊 啊啊"
+      background="pink"
+      type="dd hh:mm:ss"
+      data="1593512869000"></haha>
   </div>
 </template>
 <script>
