@@ -15,9 +15,9 @@
     </el-form>
     <br/>
     <haha
-      name="我是标题啊啊啊啊啊啊啊 啊啊"
+      name="我是标题"
       background="pink"
-      type="dd hh:mm:ss"
+      :formatter="false"
       data="1593512869000"></haha>
   </div>
 </template>

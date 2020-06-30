@@ -35,7 +35,7 @@
           <div
             class="unit"
             :style="{'background':background}"
-            v-show="formatter" v-if="isTimeUnitShow(index)"
+            v-show="isShowUnit(index)" v-if="isShowTimeUnit(index)"
             :key="item[index]">
             {{setTimeUnit(index)}}
           </div>
@@ -154,7 +154,6 @@ export default {
 
         /* 时间精度 */
         const type = this.getType(this.type)
-        console.log(type, '===>')
         switch (type) {
           case 5:
             d = Math.floor(t / 1000 / 60 / 60 / 24)
@@ -220,32 +219,34 @@ export default {
       this.$set(this.isAnimate, index, false)
     },
     /* 显示时间单位 */
-    isTimeUnitShow (index) {
+    isShowTimeUnit (index) {
+      console.log('===>', index)
       if (this.arr.includes(index)) {
-        if (index === this.timeArr.length - 1 && !this.formatter[3]) {
-          return false
-        }
         return true
       }
       return false
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
+      console.log(index)
+      let formatter = JSON.parse(JSON.stringify(this.formatter))
+      if (this.formatter === true) {
+        formatter = ['天', '时', '分', '秒']
+      }
       switch (index) {
         case this.timeArr.length - 1 :
-          return this.formatter[3] || '' // 秒
+          return formatter[3] || '' // 秒
         case this.timeArr.length - this.step - 1:
-          return this.formatter[2] || '' // 分
+          return formatter[2] || '' // 分
         case this.timeArr.length - this.step * 2 - 1:
-          return this.formatter[1] || '' // 时
+          return formatter[1] || '' // 时
         default:
-          return this.formatter[0] || '' // 天
+          return formatter[0] || '' // 天
       }
     },
     /* 转换时间精度 */
-    getType (type) { // 时间已有变化 就调这里 太恶心了。。。。。 能不能用到的时候才调 晕
+    getType (type) { // 时间已有变化 就调这里 能不能用到的时候才调 晕
       type = type.replace(/\s*/g, '')
-      console.log(type)
       switch (type) {
         case 'dd':
           return 5
@@ -258,6 +259,13 @@ export default {
         default:
           return 1
       }
+    },
+    /* 判断是否显示单位 */
+    isShowUnit (index) {
+      if (this.formatter && this.setTimeUnit(index)) {
+        return true
+      }
+      return false
     }
   },
   beforeDestroy () {
