@@ -36,7 +36,7 @@
             class="unit"
             :style="{'background':background}"
             v-show="isShowUnit(index)" v-if="isShowTimeUnit(index)"
-            :key="item[index]">
+            :key="index+10">
             {{setTimeUnit(index)}}
           </div>
         </template>
@@ -107,49 +107,7 @@ export default {
     },
     /* 组件单位处理 */
     formatterTemp () {
-      let formatter = JSON.parse(JSON.stringify(this.formatter))
-      let formatterLength = formatter.length
-      let type = this.getType(this.type)
-      console.log(type, formatterLength)
-      /**
-       * 此处是对formatter进行处理
-       *  增加此处的原因是 之前组件 如果type为ss 但用户传入formatter为['我是秒']时
-       *  期望单位是秒
-       *  但实际无单位
-       *  因为之前获取formatter单位永远都是按照['天','时','分','秒']来取的值
-       *  所以此处对formatter做了特殊处理 填充
-       */
-      if (type === 5) {
-        /**
-         * type === 5 证明type值为dd 期望传入['天']
-         * 此处暂时无需做额外处理
-         */
-      } else if (type === 4) {
-        /**
-         * type === 4 证明type值为dd hh:mm:ss 期望传入['天','时','分','秒']
-         * 此处暂时无需做额外处理
-         */
-      } else if (type === 3) {
-        /**
-         * type === 3 证明type值为hh:mm:ss 期望传入['时','分','秒']
-         * 则需填充数组第一项
-         */
-        formatter = [...new Array(1).fill(false), ...formatter]
-      } else if (type === 2) {
-        /**
-         * type === 2 证明type值为mm:ss 期望传入['分','秒']
-         * 则需填充数组前两项
-         */
-        formatter = [...new Array(2).fill(false), ...formatter]
-      } else {
-        /**
-         * type === 1 证明type值为ss 期望传入['秒']
-         * 则需填充数组前两项
-         */
-        formatter = [...new Array(3).fill(false), ...formatter]
-      }
-      console.log(formatter)
-      return formatter
+      return JSON.parse(JSON.stringify(this.formatter))
     }
   },
   watch: {
