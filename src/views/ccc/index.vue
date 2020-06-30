@@ -104,6 +104,48 @@ export default {
       const temp = [length - 1, length - step - 1, length - step * 2 - 1, length - step * 3 - 1]
       temp.length = this.getType(this.type) > 1 ? this.getType(this.type) : 1
       return temp
+    },
+    /* 组件单位处理 */
+    formatterTemp () {
+      let formatter = JSON.parse(JSON.stringify(this.formatter))
+      let formatterLength = formatter.length
+      let type = this.getType(this.type)
+      console.log(type, formatterLength)
+      /**
+       * 此处是对formatter进行处理
+       *  增加此处的原因是 之前组件 如果type为ss 但用户传入formatter为['我是秒']时
+       *  期望单位是秒
+       *  但实际无单位
+       *  因为之前获取formatter单位永远都是按照['天','时','分','秒']来取的值
+       *  所以此处对formatter做了特殊处理 填充
+       */
+      if (type === 5) {
+        console.log('暂且忽略')
+      } else if (type === 4) {
+        /**
+         * type === 4 证明type值为dd hh:mm:ss 期望传入['天','时','分','秒']
+         * 此处暂时无需做额外处理
+         */
+      } else if (type === 3) {
+        /**
+         * type === 3 证明type值为hh:mm:ss 期望传入['时','分','秒']
+         * 则需填充数组第一项
+         */
+        formatter = [...new Array(1).fill(false), ...formatter]
+      } else if (type === 2) {
+        /**
+         * type === 2 证明type值为mm:ss 期望传入['分','秒']
+         * 则需填充数组前两项
+         */
+        formatter = [...new Array(2).fill(false), ...formatter]
+      } else {
+        /**
+         * type === 1 证明type值为ss 期望传入['秒']
+         * 则需填充数组前两项
+         */
+        formatter = [...new Array(3).fill(false), ...formatter]
+      }
+      return formatter
     }
   },
   watch: {
@@ -220,7 +262,6 @@ export default {
     },
     /* 显示时间单位 */
     isShowTimeUnit (index) {
-      console.log('===>', index)
       if (this.arr.includes(index)) {
         return true
       }
@@ -228,8 +269,7 @@ export default {
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
-      console.log(index)
-      let formatter = JSON.parse(JSON.stringify(this.formatter))
+      let formatter = JSON.parse(JSON.stringify(this.formatterTemp))
       if (this.formatter === true) {
         formatter = ['天', '时', '分', '秒']
       }

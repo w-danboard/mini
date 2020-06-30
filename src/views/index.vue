@@ -17,7 +17,8 @@
     <haha
       name="我是标题"
       background="pink"
-      :formatter="false"
+      type="ss"
+      :formatter="['秒']"
       data="1593512869000"></haha>
   </div>
 </template>
