@@ -154,13 +154,17 @@ export default {
   },
   data () {
     return {
-      timeArr: this.theme ? new Array(4).fill('00') : new Array(8).fill('0'),
-      timeArrT: this.theme ? new Array(4).fill('00') : new Array(8).fill('0'),
-      isAnimate: this.theme ? new Array(4).fill(false) : new Array(8).fill(false) // 也就是默认是没有动画的
+      timeArr: this.theme ? this.generatingArrays(4, '00') : this.generatingArrays(8, '0'),
+      timeArrT: this.theme ? this.generatingArrays(4, '00') : this.generatingArrays(8, '0'),
+      isAnimate: this.theme ? this.generatingArrays(4, false) : this.generatingArrays(8, false) // 也就是默认是没有动画的
     }
   },
   methods: {
-    // 开始倒计时
+    /* 生成数组 */
+    generatingArrays (len, val) {
+      return new Array(len).fill(val)
+    },
+    /* 开始倒计时 */
     init (isInit) {
       clearTimeout(this.timer)
       this.timer = setTimeout(() => {
@@ -219,7 +223,7 @@ export default {
         /* 初始化 */
         if (isInit) {
           this.timeArrT = [...this.timeArr]
-          this.isAnimate = new Array(this.timeArr.length).fill(false)
+          this.isAnimate = this.generatingArrays(this.timeArr.length, false)
         }
 
         /* 判断倒计时 是否结束 */
