@@ -120,7 +120,10 @@ export default {
        *  所以此处对formatter做了特殊处理 填充
        */
       if (type === 5) {
-        console.log('暂且忽略')
+        /**
+         * type === 5 证明type值为dd 期望传入['天']
+         * 此处暂时无需做额外处理
+         */
       } else if (type === 4) {
         /**
          * type === 4 证明type值为dd hh:mm:ss 期望传入['天','时','分','秒']
@@ -145,6 +148,7 @@ export default {
          */
         formatter = [...new Array(3).fill(false), ...formatter]
       }
+      console.log(formatter)
       return formatter
     }
   },
@@ -270,8 +274,12 @@ export default {
     /* 设置时间单位 */
     setTimeUnit (index) {
       let formatter = JSON.parse(JSON.stringify(this.formatterTemp))
+      let type = this.getType(this.type)
       if (this.formatter === true) {
         formatter = ['天', '时', '分', '秒']
+      }
+      if (type === 5) {
+        return formatter[0] || '' // 天
       }
       switch (index) {
         case this.timeArr.length - 1 :
