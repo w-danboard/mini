@@ -17,7 +17,7 @@
     <haha
       name="我是标题"
       background="pink"
-      theme
+      type="ss"
       data="1601452500000"></haha>
   </div>
 </template>

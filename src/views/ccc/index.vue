@@ -77,7 +77,14 @@ export default {
     // 时间精度
     type: {
       type: String,
-      default: 'dd hh:mm:ss'
+      default: 'dd hh:mm:ss',
+      validator(type) {
+        let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
+        if (type && !types.includes(type)) {
+          console.error(`type类型必须为: ${types.join(' || ')}`)
+        }
+        return true
+      }
     },
     // 背景颜色
     background: {
@@ -87,11 +94,16 @@ export default {
   },
   computed: {
     /* 计算截止时间戳 */
-    endTime () {
-      if (this.data instanceof Date) {
+    endTime: {
+      get () {
+        if (this.data instanceof Date) {
         return this.data.getTime()
+        }
+        return Number(this.data) > 0 ? Number(this.data) : 0
+      },
+      set (val) {
+        return val
       }
-      return Number(this.data) > 0 ? Number(this.data) : 0
     },
     /* 主题 */
     step () {
@@ -262,8 +274,13 @@ export default {
           return 3
         case 'mm:ss':
           return 2
-        default:
+        case 'ss':
           return 1
+        default: 
+          // 如果用户传入的type 不是 dd/dd hh:mm:ss/hh:mm:ss/mm:ss/ss
+          this.endTime = 0
+          this.clearAllTimeout()
+          return 4
       }
     },
     /* 判断是否显示单位 */
@@ -272,11 +289,15 @@ export default {
         return true
       }
       return false
-    }
+    },
+    /* 清除所有定时器 */
+    clearAllTimeout () {
+      clearTimeout(this.timer)
+      clearTimeout(this.watchTimer)
+    } 
   },
   beforeDestroy () {
-    clearTimeout(this.timer)
-    clearTimeout(this.watchTimer)
+    this.clearAllTimeout()
   }
 }
 
