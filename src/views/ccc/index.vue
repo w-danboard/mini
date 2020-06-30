@@ -181,15 +181,23 @@ export default {
         /* 判断主题 */
         let arr = []
         if (this.theme) {
-          type === 4 && arr.push(String(d).padStart(2, '0'))
-          type === 3 && arr.push(String(h).padStart(2, '0'))
-          type === 2 && arr.push(String(m).padStart(2, '0'))
-          arr.push(String(s).padStart(2, '0'))
+          if (type === 5) {
+            arr.push(String(d).padStart(2, '0'))
+          } else {
+            type >= 4 && arr.push(String(d).padStart(2, '0'))
+            type >= 3 && arr.push(String(h).padStart(2, '0'))
+            type >= 2 && arr.push(String(m).padStart(2, '0'))
+            arr.push(String(s).padStart(2, '0'))
+          }
         } else {
-          type === 4 && arr.push(...String(d).padStart(2, '0').split(''))
-          type === 3 && arr.push(...String(h).padStart(2, '0').split(''))
-          type === 2 && arr.push(...String(m).padStart(2, '0').split(''))
-          arr.push(...String(s).padStart(2, '0').split(''))
+          if (type === 5) {
+            arr.push(String(d).padStart(2, '0'))
+          } else {
+            type >= 4 && arr.push(...String(d).padStart(2, '0').split(''))
+            type >= 3 && arr.push(...String(h).padStart(2, '0').split(''))
+            type >= 2 && arr.push(...String(m).padStart(2, '0').split(''))
+            arr.push(...String(s).padStart(2, '0').split(''))
+          }
         }
         this.timeArr = arr
 
