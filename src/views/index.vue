@@ -17,6 +17,7 @@
     <haha
       name="我是标题"
       background="pink"
+      type="HH:mm:SS"
       data="3802501776000"></haha>
   </div>
 </template>

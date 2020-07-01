@@ -10,7 +10,7 @@
           v-if="!!name">
           {{name}}
         </div>
-        <!-- 假如theme是默认值false  也就是["0", "0", "0", "0", "0", "0", "0", "0"] -->
+        <!-- 假如theme是默认值false  timeArr也就是["0", "0", "0", "0", "0", "0", "0", "0"] -->
         <template v-for="(item, index) in timeArr">
           <div
             class="time-box"
@@ -79,6 +79,7 @@ export default {
       type: String,
       default: 'dd hh:mm:ss',
       validator(type) {
+        type = type.toLowerCase()
         let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
         if (type && !types.includes(type)) {
           console.error(`type类型必须为: ${types.join(' || ')}`)
@@ -121,7 +122,12 @@ export default {
     /* 监听data数据变化 */
     data (newV, oldV) {
       console.log(newV, oldV)
-      this.startTimer(true)
+      this.startTimer()
+    },
+    /* 监听type变化 */
+    type (newV, oldV) {
+      console.log(newV, oldV)
+      this.startTimer()
     },
     /* 监听数据发生变化时 翻页效果 */
     timeArr (newV, oldV) {
@@ -131,7 +137,6 @@ export default {
        *    那timeArrT和isAnimate应该也有所改变
        */
       if (newV.length !== oldV.length) {
-        console.log(111)
         this.timeArrT = [...this.timeArr]
         this.isAnimate = this.generatingArrays(this.timeArr.length, false)
       }
@@ -185,8 +190,14 @@ export default {
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
-      let formatter = JSON.parse(JSON.stringify(this.formatterTemp))
+      let formatter = JSON.parse(JSON.stringify(this.formatterTemp)) // 例如: formatter为['天', '时', '分', '秒']
       let type = this.getType(this.type)
+      /**
+       * 此处if判断this.formatter的原因如下
+       *  formatter作为props传入值可传入 Array || Boolean类型
+       *  如果使用组件的时候，手动把formatter 设置为true，就导致默认值 ['天', '时', '分', '秒']失效
+       *  所以在该情况时 重新把formatter 赋值为 ['天', '时', '分', '秒']
+       */
       if (this.formatter === true) {
         formatter = ['天', '时', '分', '秒']
       }
@@ -207,7 +218,8 @@ export default {
       }
     },
     /* 转换时间精度 */
-    getType (type) { // 时间已有变化 就调这里 能不能用到的时候才调 晕
+    getType (type) {
+      type = type.toLowerCase()
       let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
       if (this.isTypeError && types.includes(type)) {
         this.isTypeError = false
