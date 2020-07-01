@@ -94,16 +94,11 @@ export default {
   },
   computed: {
     /* 计算截止时间戳 */
-    endTime: {
-      get () {
-        if (this.data instanceof Date) {
+    endTime () {
+      if (this.data instanceof Date) {
         return this.data.getTime()
-        }
-        return Number(this.data) > 0 ? Number(this.data) : 0
-      },
-      set (val) {
-        return val
       }
+      return Number(this.data) > 0 ? Number(this.data) : 0
     },
     /* 主题 */
     step () {
@@ -154,6 +149,7 @@ export default {
   },
   data () {
     return {
+      isTypeError: false, // 传入的type值是否正确
       timeArr: this.theme ? this.generatingArrays(4, '00') : this.generatingArrays(8, '0'),
       timeArrT: this.theme ? this.generatingArrays(4, '00') : this.generatingArrays(8, '0'),
       isAnimate: this.theme ? this.generatingArrays(4, false) : this.generatingArrays(8, false) // 也就是默认是没有动画的
@@ -268,11 +264,15 @@ export default {
     },
     /* 转换时间精度 */
     getType (type) { // 时间已有变化 就调这里 能不能用到的时候才调 晕
-      type = type.replace(/\s*/g, '')
+      let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
+      if (this.isTypeError && types.includes(type)) {
+        this.isTypeError = false
+        this.init()
+      }
       switch (type) {
         case 'dd':
           return 5
-        case 'ddhh:mm:ss':
+        case 'dd hh:mm:ss':
           return 4
         case 'hh:mm:ss':
           return 3
@@ -282,7 +282,7 @@ export default {
           return 1
         default: 
           // 如果用户传入的type 不是 dd/dd hh:mm:ss/hh:mm:ss/mm:ss/ss
-          this.endTime = 0
+          this.isTypeError = true
           this.clearAllTimeout()
           return 4
       }
