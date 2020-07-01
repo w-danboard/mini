@@ -118,13 +118,10 @@ export default {
     }
   },
   watch: {
-    /* 监听截止日期发生变化 */
-    data: {
-      handler (newVal, oldVal) {
-        console.log(newVal, oldVal)
-        this.init(true)
-      },
-      immediate: true
+    /* 监听data数据变化 */
+    data (newV, oldV) {
+      console.log(newV, oldV)
+      this.startTimer(true)
     },
     /* 监听数据发生变化时 翻页效果 */
     timeArr (newV, oldV) {
@@ -161,25 +158,9 @@ export default {
       return new Array(len).fill(val)
     },
     /* 开始倒计时 */
-    init (isInit) {
+    init () {
       clearTimeout(this.timer)
-      this.timer = setTimeout(() => {
-        let t = this.endTime - new Date().getTime()   // 计算时间差
-        this.rendeComponent(t) // 根据截至时间 渲染组件
-
-        /* 初始化 */
-        if (isInit) {
-          this.timeArrT = [...this.timeArr]
-          this.isAnimate = this.generatingArrays(this.timeArr.length, false)
-        }
-
-        /* 判断倒计时 是否结束 */
-        if (t > 0) {
-          this.init()
-        } else {
-          this.$emit('timeEnd')
-        }
-      }, 1000)
+      this.timer = setTimeout(this.startTimer, 1000)
     },
     /* 翻页动画 */
     onAnimateEnd (index) {
@@ -247,13 +228,9 @@ export default {
       }
       return false
     },
-    /* 清除所有定时器 */
-    clearAllTimeout () {
-      clearTimeout(this.timer)
-      clearTimeout(this.watchTimer)
-    },
-    /* 根据截至时间 渲染组件 */
-    rendeComponent (t) {
+    /* 启动定时器 */
+    startTimer (isInit) {
+      let t = this.endTime - new Date().getTime()   // 计算时间差
       t = t < 0 ? 0 : t
       let [d, h, m, s] = [0, 0, 0, 0]    // 定义变量day, hour, min, second保存倒计时的时间
 
@@ -304,11 +281,28 @@ export default {
         }
       }
       this.timeArr = arr
+
+      /* 初始化 */
+      if (isInit) {
+        this.timeArrT = [...this.timeArr]
+        this.isAnimate = this.generatingArrays(this.timeArr.length, false)
+      }
+
+      /* 判断倒计时 是否结束 */
+      if (t > 0) {
+        this.init()
+      } else {
+        this.$emit('timeEnd')
+      }
+    },
+    /* 清除所有定时器 */
+    clearAllTimeout () {
+      clearTimeout(this.timer)
+      clearTimeout(this.watchTimer)
     }
   },
   created () {
-    let t = this.endTime - new Date().getTime() // 计算时间差
-    this.rendeComponent(t) // 根据截至时间 渲染组件
+    this.startTimer(true)
   },
   beforeDestroy () {
     this.clearAllTimeout()
