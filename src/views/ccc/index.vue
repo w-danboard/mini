@@ -36,7 +36,7 @@
             class="unit"
             :style="{'background':background}"
             v-show="isShowUnit(index)" v-if="isShowTimeUnit(index)"
-            :key="index+10">
+            :key="`unit-${index}`">
             {{setTimeUnit(index)}}
           </div>
         </template>

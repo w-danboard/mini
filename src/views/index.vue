@@ -15,9 +15,8 @@
     </el-form>
     <br/>
     <haha
-      name="我是标题"
+      name="我是标题a"
       background="pink"
-      theme
       data="3802501776000"></haha>
   </div>
 </template>
