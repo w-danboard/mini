@@ -150,9 +150,9 @@ export default {
   data () {
     return {
       isTypeError: false, // 传入的type值是否正确
-      timeArr: this.theme ? this.generatingArrays(4, '00') : this.generatingArrays(8, '0'),
-      timeArrT: this.theme ? this.generatingArrays(4, '00') : this.generatingArrays(8, '0'),
-      isAnimate: this.theme ? this.generatingArrays(4, false) : this.generatingArrays(8, false) // 也就是默认是没有动画的
+      timeArr: [],
+      timeArrT: [],
+      isAnimate: [] // 也就是默认是没有动画的
     }
   },
   methods: {
@@ -165,56 +165,7 @@ export default {
       clearTimeout(this.timer)
       this.timer = setTimeout(() => {
         let t = this.endTime - new Date().getTime()   // 计算时间差
-        t = t < 0 ? 0 : t
-        let [d, h, m, s] = [0, 0, 0, 0]    // 定义变量day, hour, min, second保存倒计时的时间
-
-        /* 时间精度 */
-        const type = this.getType(this.type)
-        switch (type) {
-          case 5:
-            d = Math.floor(t / 1000 / 60 / 60 / 24)
-            break
-          case 4:
-            d = Math.floor(t / 1000 / 60 / 60 / 24)
-            h = Math.floor(t / 1000 / 60 / 60 % 24)
-            m = Math.floor(t / 1000 / 60 % 60)
-            s = Math.floor(t / 1000 % 60)
-            break
-          case 3:
-            h = Math.floor(t / 1000 / 60 / 60)
-            m = Math.floor(t / 1000 / 60 % 60)
-            s = Math.floor(t / 1000 % 60)
-            break
-          case 2:
-            m = Math.floor(t / 1000 / 60)
-            s = Math.floor(t / 1000 % 60)
-            break
-          default:
-            s = Math.floor(t / 1000)
-        }
-
-        /* 判断主题 */
-        let arr = []
-        if (this.theme) {
-          if (type === 5) {
-            arr.push(String(d).padStart(2, '0'))
-          } else {
-            type >= 4 && arr.push(String(d).padStart(2, '0'))
-            type >= 3 && arr.push(String(h).padStart(2, '0'))
-            type >= 2 && arr.push(String(m).padStart(2, '0'))
-            arr.push(String(s).padStart(2, '0'))
-          }
-        } else {
-          if (type === 5) {
-            arr.push(...String(d).padStart(2, '0').split(''))
-          } else {
-            type >= 4 && arr.push(...String(d).padStart(2, '0').split(''))
-            type >= 3 && arr.push(...String(h).padStart(2, '0').split(''))
-            type >= 2 && arr.push(...String(m).padStart(2, '0').split(''))
-            arr.push(...String(s).padStart(2, '0').split(''))
-          }
-        }
-        this.timeArr = arr
+        this.rendeComponent(t) // 根据截至时间 渲染组件
 
         /* 初始化 */
         if (isInit) {
@@ -300,7 +251,64 @@ export default {
     clearAllTimeout () {
       clearTimeout(this.timer)
       clearTimeout(this.watchTimer)
+    },
+    /* 根据截至时间 渲染组件 */
+    rendeComponent (t) {
+      t = t < 0 ? 0 : t
+      let [d, h, m, s] = [0, 0, 0, 0]    // 定义变量day, hour, min, second保存倒计时的时间
+
+      /* 时间精度 */
+      const type = this.getType(this.type)
+      switch (type) {
+        case 5:
+          d = Math.floor(t / 1000 / 60 / 60 / 24)
+          break
+        case 4:
+          d = Math.floor(t / 1000 / 60 / 60 / 24)
+          h = Math.floor(t / 1000 / 60 / 60 % 24)
+          m = Math.floor(t / 1000 / 60 % 60)
+          s = Math.floor(t / 1000 % 60)
+          break
+        case 3:
+          h = Math.floor(t / 1000 / 60 / 60)
+          m = Math.floor(t / 1000 / 60 % 60)
+          s = Math.floor(t / 1000 % 60)
+          break
+        case 2:
+          m = Math.floor(t / 1000 / 60)
+          s = Math.floor(t / 1000 % 60)
+          break
+        default:
+          s = Math.floor(t / 1000)
+      }
+
+      /* 判断主题 */
+      let arr = []
+      if (this.theme) {
+        if (type === 5) {
+          arr.push(String(d).padStart(2, '0'))
+        } else {
+          type >= 4 && arr.push(String(d).padStart(2, '0'))
+          type >= 3 && arr.push(String(h).padStart(2, '0'))
+          type >= 2 && arr.push(String(m).padStart(2, '0'))
+          arr.push(String(s).padStart(2, '0'))
+        }
+      } else {
+        if (type === 5) {
+          arr.push(...String(d).padStart(2, '0').split(''))
+        } else {
+          type >= 4 && arr.push(...String(d).padStart(2, '0').split(''))
+          type >= 3 && arr.push(...String(h).padStart(2, '0').split(''))
+          type >= 2 && arr.push(...String(m).padStart(2, '0').split(''))
+          arr.push(...String(s).padStart(2, '0').split(''))
+        }
+      }
+      this.timeArr = arr
     }
+  },
+  created () {
+    let t = this.endTime - new Date().getTime() // 计算时间差
+    this.rendeComponent(t) // 根据截至时间 渲染组件
   },
   beforeDestroy () {
     this.clearAllTimeout()
