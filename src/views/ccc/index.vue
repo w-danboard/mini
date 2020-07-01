@@ -125,6 +125,16 @@ export default {
     },
     /* 监听数据发生变化时 翻页效果 */
     timeArr (newV, oldV) {
+      /**
+       * 此处if判断的newV和oldV是否相等的原因如下
+       *    分割显示的情况 如果数组长度变了 比如之前是100天 变成99天了 
+       *    那timeArrT和isAnimate应该也有所改变
+       */
+      if (newV.length !== oldV.length) {
+        console.log(111)
+        this.timeArrT = [...this.timeArr]
+        this.isAnimate = this.generatingArrays(this.timeArr.length, false)
+      }
       const diff = []
       newV.forEach((value, index) => {
         if (value !== oldV[index]) {
@@ -147,9 +157,9 @@ export default {
   data () {
     return {
       isTypeError: false, // 传入的type值是否正确
-      timeArr: [],
-      timeArrT: [],
-      isAnimate: [] // 也就是默认是没有动画的
+      timeArr: [],  // 时间值
+      timeArrT: [], // 翻页的时间值 相当于赋值了一份timeArr 只是延迟350ms执行
+      isAnimate: [] // 翻页时的动画 初始都是false 翻页时为true
     }
   },
   methods: {
@@ -229,7 +239,7 @@ export default {
       return false
     },
     /* 启动定时器 */
-    startTimer (isInit) {
+    startTimer () {
       let t = this.endTime - new Date().getTime()   // 计算时间差
       t = t < 0 ? 0 : t
       let [d, h, m, s] = [0, 0, 0, 0]    // 定义变量day, hour, min, second保存倒计时的时间
@@ -282,12 +292,6 @@ export default {
       }
       this.timeArr = arr
 
-      /* 初始化 */
-      if (isInit) {
-        this.timeArrT = [...this.timeArr]
-        this.isAnimate = this.generatingArrays(this.timeArr.length, false)
-      }
-
       /* 判断倒计时 是否结束 */
       if (t > 0) {
         this.init()
@@ -302,18 +306,12 @@ export default {
     }
   },
   created () {
-    this.startTimer(true)
+    this.startTimer()
   },
   beforeDestroy () {
     this.clearAllTimeout()
   }
 }
-/**
- * 遗留问题 
- * 1. 分割显示的情况 如果数组长度变了 比如之前是100天 变成99天了 
- *    那timeArrT和isAnimate应该也有所改变 目前看来并没有
- *    考虑：是否监听timeArrT长度改变的时候 从新为timeArrT和isAnimate赋值
- */
 </script>
 
 <style scoped lang="postcss">
