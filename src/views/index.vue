@@ -16,6 +16,7 @@
     <br/>
     <haha
       name="我是标题"
+      type="ss"
       background="pink"
       data="3802501776000"></haha>
   </div>

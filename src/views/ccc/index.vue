@@ -206,7 +206,7 @@ export default {
           }
         } else {
           if (type === 5) {
-            arr.push(String(d).padStart(2, '0'))
+            arr.push(...String(d).padStart(2, '0').split(''))
           } else {
             type >= 4 && arr.push(...String(d).padStart(2, '0').split(''))
             type >= 3 && arr.push(...String(h).padStart(2, '0').split(''))
@@ -248,8 +248,10 @@ export default {
       if (this.formatter === true) {
         formatter = ['天', '时', '分', '秒']
       }
+      // type === 5 的时候 证明用户传入type值为dd 也就是只显示天
       if (type === 5) {
-        return formatter[0] || '' // 天
+        let isTrue = this.timeArr.length - 1 === index
+        return isTrue ? formatter[0] || '' : null
       }
       switch (index) {
         case this.timeArr.length - 1 :
@@ -304,13 +306,6 @@ export default {
     this.clearAllTimeout()
   }
 }
-
-/**
- * 存在问题
- * --------props
- * name 目前没什么问题
- * background 目前没什么问题
- */
 </script>
 
 <style scoped lang="postcss">
