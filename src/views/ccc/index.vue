@@ -64,8 +64,8 @@ export default {
       type: String,
       default: '参考倒计时'
     },
-    // 组件单位
-    formatter: {   // false-不显示时间单位
+    // 组件单位 值为false时 则不显示时间单位
+    formatter: {
       type: [Boolean, Array],
       default: () => ['天', '时', '分', '秒']
     },
@@ -300,12 +300,18 @@ export default {
     clearAllTimeout () {
       clearTimeout(this.timer)
       clearTimeout(this.watchTimer)
-    } 
+    }
   },
   beforeDestroy () {
     this.clearAllTimeout()
   }
 }
+/**
+ * 遗留问题 
+ * 1. 分割显示的情况 如果数组长度变了 比如之前是100天 变成99天了 
+ *    那timeArrT和isAnimate应该也有所改变 目前看来并没有
+ *    考虑：是否监听timeArrT长度改变的时候 从新为timeArrT和isAnimate赋值
+ */
 </script>
 
 <style scoped lang="postcss">
