@@ -15,10 +15,11 @@
     </el-form>
     <br/>
     <haha
-      name="我是标题"
+      name="我是标题啊"
       background="pink"
-      type="HH:mm:SS"
-      data="3802501776000"></haha>
+      :data="new Date().getTime() + 12000">
+        <span slot="name">我是标题</span>
+      </haha>
   </div>
 </template>
 <script>

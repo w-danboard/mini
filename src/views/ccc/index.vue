@@ -7,8 +7,9 @@
         <div
           class="time-title"
           :style="{'background':background}"
-          v-if="!!name">
-          {{name}}
+          v-if="!!name || $slots.name">
+          <span v-if="!$slots.name">{{name}}</span>
+          <slot name="name"></slot>
         </div>
         <!-- 假如theme是默认值false  timeArr也就是["0", "0", "0", "0", "0", "0", "0", "0"] -->
         <template v-for="(item, index) in timeArr">
@@ -66,8 +67,10 @@ export default {
     },
     // 组件单位 值为false时 则不显示时间单位
     formatter: {
-      type: [Boolean, Array],
-      default: () => ['天', '时', '分', '秒']
+      type: [Boolean, Array, Object],
+      default: () => {
+        return { d: '天', h: '时', m: '分', s: '秒' }
+      }
     },
     // 组件主题 (true-合并 false-分离)
     theme: {
@@ -78,7 +81,7 @@ export default {
     type: {
       type: String,
       default: 'dd hh:mm:ss',
-      validator(type) {
+      validator (type) {
         type = type.toLowerCase()
         let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
         if (type && !types.includes(type)) {
@@ -133,7 +136,7 @@ export default {
     timeArr (newV, oldV) {
       /**
        * 此处if判断的newV和oldV是否相等的原因如下
-       *    分割显示的情况 如果数组长度变了 比如之前是100天 变成99天了 
+       *    分割显示的情况如果数组长度变了比如之前是100天变成99天了
        *    那timeArrT和isAnimate应该也有所改变
        */
       if (newV.length !== oldV.length) {
@@ -190,7 +193,16 @@ export default {
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
-      let formatter = JSON.parse(JSON.stringify(this.formatterTemp)) // 例如: formatter为['天', '时', '分', '秒']
+      let formatter = JSON.parse(JSON.stringify(this.formatterTemp))
+      // 如果用户传入formatter为数组 则转换为对象
+      if (Array.isArray(formatter)) {
+        let [d, h, m, s] = formatter
+        formatter = {}
+        formatter['d'] = d
+        formatter['h'] = h
+        formatter['m'] = m
+        formatter['s'] = s
+      }
       let type = this.getType(this.type)
       /**
        * 此处if判断this.formatter的原因如下
@@ -199,22 +211,22 @@ export default {
        *  所以在该情况时 重新把formatter 赋值为 ['天', '时', '分', '秒']
        */
       if (this.formatter === true) {
-        formatter = ['天', '时', '分', '秒']
+        formatter = { d: '天', h: '时', m: '分', s: '秒' }
       }
       // type === 5 的时候 证明用户传入type值为dd 也就是只显示天
       if (type === 5) {
         let isTrue = this.timeArr.length - 1 === index
-        return isTrue ? formatter[0] || '' : null
+        return isTrue ? formatter['d'] || '' : null
       }
       switch (index) {
         case this.timeArr.length - 1 :
-          return formatter[3] || '' // 秒
+          return formatter['s'] || '' // 秒
         case this.timeArr.length - this.step - 1:
-          return formatter[2] || '' // 分
+          return formatter['m'] || '' // 分
         case this.timeArr.length - this.step * 2 - 1:
-          return formatter[1] || '' // 时
+          return formatter['h'] || '' // 时
         default:
-          return formatter[0] || '' // 天
+          return formatter['d'] || '' // 天
       }
     },
     /* 转换时间精度 */
@@ -236,7 +248,7 @@ export default {
           return 2
         case 'ss':
           return 1
-        default: 
+        default:
           // 如果用户传入的type 不是 dd/dd hh:mm:ss/hh:mm:ss/mm:ss/ss
           this.isTypeError = true
           this.clearAllTimeout()
@@ -266,19 +278,19 @@ export default {
           d = Math.floor(t / 1000 / 60 / 60 / 24)
           h = Math.floor(t / 1000 / 60 / 60 % 24)
           m = Math.floor(t / 1000 / 60 % 60)
-          s = Math.floor(t / 1000 % 60)
+          s = Math.round(t / 1000 % 60)
           break
         case 3:
           h = Math.floor(t / 1000 / 60 / 60)
           m = Math.floor(t / 1000 / 60 % 60)
-          s = Math.floor(t / 1000 % 60)
+          s = Math.round(t / 1000 % 60)
           break
         case 2:
-          m = Math.floor(t / 1000 / 60)
-          s = Math.floor(t / 1000 % 60)
+          m = Math.ceil(t / 1000 / 60)
+          s = Math.round(t / 1000 % 60)
           break
         default:
-          s = Math.floor(t / 1000)
+          s = Math.round(t / 1000)
       }
 
       /* 判断主题 */
@@ -302,6 +314,7 @@ export default {
           arr.push(...String(s).padStart(2, '0').split(''))
         }
       }
+      console.log(arr)
       this.timeArr = arr
 
       /* 判断倒计时 是否结束 */
