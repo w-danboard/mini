@@ -63,9 +63,9 @@ export default {
     // 倒计时标题 (传空字符串则不显示标题)
     name: {
       type: String,
-      default: '参考倒计时'
+      default: '参考倒计时' // 此处默认值太定制化 为不影响之前使用此组件的项目 暂不更改
     },
-    // 组件单位 值为false时 则不显示时间单位
+    // 组件单位 值为false时 则不显示时间单位 (* Array传参方式 为了兼容之前使用过此组件的项目 现不建议使用Array传参 有点恶心。。。 *)
     formatter: {
       type: [Boolean, Array, Object],
       default: () => {
@@ -77,7 +77,7 @@ export default {
       type: Boolean,
       default: false
     },
-    // 时间精度
+    // 时间精度 (* 此处待优化 期望优化后支持 'dd hh' & hh:mm & 'hh' & 'mm' 处理写法需灵活 目前相对于写死了 *)
     type: {
       type: String,
       default: 'dd hh:mm:ss',
@@ -100,7 +100,9 @@ export default {
     /* 计算截止时间戳 */
     endTime () {
       if (this.data instanceof Date) {
-        return this.data.getTime()
+        if (!isNaN(this.data)) return this.data.getTime()
+        console.error(`传入截止时间格式有误。 请传入时间戳， 或参考此格式: new Date('2020-07-03 17:48:33')`)
+        return 0
       }
       return Number(this.data) > 0 ? Number(this.data) : 0
     },
@@ -193,27 +195,30 @@ export default {
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
-      let formatter = JSON.parse(JSON.stringify(this.formatterTemp))
+      let formatter = this.formatterTemp
+      let formatterObje = { d: '天', h: '时', m: '分', s: '秒' }
       // 如果用户传入formatter为数组 则转换为对象
       if (Array.isArray(formatter)) {
         let [d, h, m, s] = formatter
         formatter = {}
-        formatter['d'] = d
-        formatter['h'] = h
-        formatter['m'] = m
-        formatter['s'] = s
+        formatter['d'] = d || '天'
+        formatter['h'] = h || '时'
+        formatter['m'] = m || '分'
+        formatter['s'] = s || '秒'
+      } else {
+        formatter = Object.assign(formatterObje, formatter)
       }
       let type = this.getType(this.type)
       /**
        * 此处if判断this.formatter的原因如下
-       *  formatter作为props传入值可传入 Array || Boolean类型
-       *  如果使用组件的时候，手动把formatter 设置为true，就导致默认值 ['天', '时', '分', '秒']失效
-       *  所以在该情况时 重新把formatter 赋值为 ['天', '时', '分', '秒']
+       *  formatter作为props传入值可传入 Array || Object || Boolean类型
+       *  如果使用组件的时候，手动把formatter 设置为true，就导致默认值 { d: '天', h: '时', m: '分', s: '秒' } 失效
+       *  所以在该情况时 重新把formatter 赋值为 { d: '天', h: '时', m: '分', s: '秒' }
        */
       if (this.formatter === true) {
-        formatter = { d: '天', h: '时', m: '分', s: '秒' }
+        formatter = formatterObje
       }
-      // type === 5 的时候 证明用户传入type值为dd 也就是只显示天
+      // type === 5 的时候 证明用户传入type值为dd 也就是只显示天 (* 有时间需优化的点 *)
       if (type === 5) {
         let isTrue = this.timeArr.length - 1 === index
         return isTrue ? formatter['d'] || '' : null
@@ -264,11 +269,11 @@ export default {
     },
     /* 启动定时器 */
     startTimer () {
-      let t = this.endTime - new Date().getTime()   // 计算时间差
+      let t = this.endTime - new Date().getTime() // 计算时间差
       t = t < 0 ? 0 : t
-      let [d, h, m, s] = [0, 0, 0, 0]    // 定义变量day, hour, min, second保存倒计时的时间
+      let [d, h, m, s] = [0, 0, 0, 0] // 定义变量day, hour, min, second保存倒计时的时间
 
-      /* 时间精度 */
+      /* 时间精度 (* 有时间需优化的点 *) */
       const type = this.getType(this.type)
       switch (type) {
         case 5:
@@ -286,14 +291,14 @@ export default {
           s = Math.round(t / 1000 % 60)
           break
         case 2:
-          m = Math.ceil(t / 1000 / 60)
+          m = Math.floor(t / 1000 / 60)
           s = Math.round(t / 1000 % 60)
           break
         default:
           s = Math.round(t / 1000)
       }
 
-      /* 判断主题 */
+      /* 判断主题 (* 有时间需优化的点 *) */
       let arr = []
       if (this.theme) {
         if (type === 5) {
@@ -314,7 +319,6 @@ export default {
           arr.push(...String(s).padStart(2, '0').split(''))
         }
       }
-      console.log(arr)
       this.timeArr = arr
 
       /* 判断倒计时 是否结束 */
