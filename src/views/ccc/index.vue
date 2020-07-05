@@ -83,7 +83,7 @@ export default {
       default: 'dd hh:mm:ss',
       validator (type) {
         type = type.toLowerCase()
-        let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
+        let types = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss']
         if (type && !types.includes(type)) {
           console.error(`type类型必须为: ${types.join(' || ')}`)
         }
@@ -98,13 +98,18 @@ export default {
   },
   computed: {
     /* 计算截止时间戳 */
-    endTime () {
-      if (this.data instanceof Date) {
-        if (!isNaN(this.data)) return this.data.getTime()
-        console.error(`传入截止时间格式有误。 请传入时间戳， 或参考此格式: new Date('2020-07-03 17:48:33')`)
-        return 0
+    endTime: {
+      get () {
+        if (this.data instanceof Date) {
+          if (!isNaN(this.data)) return this.data.getTime()
+            console.error(`传入截止时间格式有误。 请传入时间戳， 或参考此格式: new Date('2020-07-03 17:48:33')`)
+            return 0
+          }
+        return Number(this.data) > 0 ? Number(this.data) : 0
+      },
+      set (value) {
+        return value
       }
-      return Number(this.data) > 0 ? Number(this.data) : 0
     },
     /* 主题 */
     step () {
@@ -207,7 +212,6 @@ export default {
       } else {
         formatter = Object.assign(formatterObj, formatter)
       }
-      let type = this.getType(this.type)
       /**
        * 此处if判断this.formatter的原因如下
        *  formatter作为props传入值可传入 Array || Object || Boolean类型
@@ -217,46 +221,47 @@ export default {
       if (this.formatter === true) {
         formatter = formatterObj
       }
-      // type === 5 的时候 证明用户传入type值为dd 也就是只显示天 (* 有时间需优化的点 *)
-      if (type === 5) {
-        let isTrue = this.timeArr.length - 1 === index
-        return isTrue ? formatter['d'] : null
-      }
+
+      let types = this.type.replace(/(\s|:)/g, ',').split(',')
+      types = types.map(item => item.slice(1))
+      this.isTypeError ? types = ['d', 'h', 'm', 's'] : null
+      let typesLength = types.length
+      console.log()
       switch (index) {
         case this.timeArr.length - 1 :
-          return formatter['s'] // 秒
+          return formatter[types[typesLength-1]]
         case this.timeArr.length - this.step - 1:
-          return formatter['m'] // 分
+          return formatter[types[typesLength-2]]
         case this.timeArr.length - this.step * 2 - 1:
-          return formatter['h'] // 时
+          return formatter[types[typesLength-3]]
         default:
-          return formatter['d'] // 天
+          return formatter[types[typesLength-4]]
       }
     },
     /* 转换时间精度 */
     getType (type) {
+      console.log('调我了')
       type = type.toLowerCase()
-      let types = ['dd', 'dd hh:mm:ss', 'hh:mm:ss', 'mm:ss', 'ss']
+      let types = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss']
       if (this.isTypeError && types.includes(type)) {
         this.isTypeError = false
         this.init()
       }
-      switch (type) {
-        case 'dd':
-          return 5
-        case 'dd hh:mm:ss':
-          return 4
-        case 'hh:mm:ss':
-          return 3
-        case 'mm:ss':
-          return 2
-        case 'ss':
-          return 1
-        default:
-          // 如果用户传入的type 不是 dd/dd hh:mm:ss/hh:mm:ss/mm:ss/ss
-          this.isTypeError = true
-          this.clearAllTimeout()
-          return 4
+
+      if (type === 'dd hh:mm:ss') {
+        return 4
+      } else if (type === 'dd hh:mm' || type === 'hh:mm:ss') {
+        return 3
+      } else if (type === 'dd hh' || type === 'hh:mm' || type === 'mm:ss') {
+        return 2
+      } else if (type === 'dd' || type === 'hh' || type === 'mm' || type === 'ss') {
+        return 1
+      } else {
+        // 传入type类型错误
+        this.endTime = 0
+        this.isTypeError = true
+        this.clearAllTimeout()
+        return 4
       }
     },
     /* 启动定时器 */
@@ -265,51 +270,38 @@ export default {
       t = t < 0 ? 0 : t
       let [d, h, m, s] = [0, 0, 0, 0] // 定义变量day, hour, min, second保存倒计时的时间
 
-      /* 时间精度 (* 有时间需优化的点 *) */
-      const type = this.getType(this.type)
-      switch (type) {
-        case 5:
-          d = Math.floor(t / 1000 / 60 / 60 / 24)
-          break
-        case 4:
-          d = Math.floor(t / 1000 / 60 / 60 / 24)
-          h = Math.floor(t / 1000 / 60 / 60 % 24)
-          m = Math.floor(t / 1000 / 60 % 60)
-          s = Math.round(t / 1000 % 60)
-          break
-        case 3:
-          h = Math.floor(t / 1000 / 60 / 60)
-          m = Math.floor(t / 1000 / 60 % 60)
-          s = Math.round(t / 1000 % 60)
-          break
-        case 2:
-          m = Math.floor(t / 1000 / 60)
-          s = Math.round(t / 1000 % 60)
-          break
-        default:
-          s = Math.round(t / 1000)
-      }
+      /* 时间精度 */
+      const secT = 1000
+      const minT = secT * 60
+      const hourT = minT * 60
+      const dayT = hourT * 24
 
-      /* 判断主题 (* 有时间需优化的点 *) */
+      const types = this.type.replace(/(\s|:)/g, ',').split(',')
+      let typeObj = {}
+      types.forEach(item => typeObj[item] = item)
+      d = typeObj['dd'] ? d = Math.floor(t / dayT) : 0  // 天
+      h = typeObj['hh'] && typeObj['dd'] ? Math.floor(t / hourT % 24)     // 时
+          : (typeObj['hh'] && !typeObj['dd'] ? Math.floor(t / hourT) : 0)
+      m = typeObj['mm'] && typeObj['hh'] ? Math.floor(t / minT % 60)      // 分
+          : (typeObj['mm'] && !typeObj['hh'] ? Math.floor(t / minT) : 0)
+      s = typeObj['ss'] && typeObj['mm'] ? Math.round(t / secT % 60)      // 秒
+          : (typeObj['ss'] && !typeObj['mm'] ? Math.round(t / secT) : 0)
+
+      /* 判断主题 */
       let arr = []
+      let typeIncludes = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss']
       if (this.theme) {
-        if (type === 5) {
-          arr.push(String(d).padStart(2, '0'))
-        } else {
-          type >= 4 && arr.push(String(d).padStart(2, '0'))
-          type >= 3 && arr.push(String(h).padStart(2, '0'))
-          type >= 2 && arr.push(String(m).padStart(2, '0'))
-          arr.push(String(s).padStart(2, '0'))
-        }
+          typeObj['dd'] && arr.push(String(d).padStart(2, '0'))
+          typeObj['hh'] && arr.push(String(h).padStart(2, '0'))
+          typeObj['mm'] && arr.push(String(m).padStart(2, '0'))
+          typeObj['ss'] && arr.push(String(s).padStart(2, '0'))
+          !typeIncludes.includes(this.type)? arr = this.generatingArrays(4, '00') : null 
       } else {
-        if (type === 5) {
-          arr.push(...String(d).padStart(2, '0').split(''))
-        } else {
-          type >= 4 && arr.push(...String(d).padStart(2, '0').split(''))
-          type >= 3 && arr.push(...String(h).padStart(2, '0').split(''))
-          type >= 2 && arr.push(...String(m).padStart(2, '0').split(''))
-          arr.push(...String(s).padStart(2, '0').split(''))
-        }
+          typeObj['dd'] && arr.push(...String(d).padStart(2, '0').split(''))
+          typeObj['hh'] && arr.push(...String(h).padStart(2, '0').split(''))
+          typeObj['mm'] && arr.push(...String(m).padStart(2, '0').split(''))
+          typeObj['ss'] && arr.push(...String(s).padStart(2, '0').split(''))
+          !typeIncludes.includes(this.type) ? arr = this.generatingArrays(8, '0') : null 
       }
       this.timeArr = arr
 

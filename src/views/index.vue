@@ -17,7 +17,7 @@
     <haha
       name="我是标题啊"
       background="pink"
-      :data="new Date().getTime() + 12000">
+      :data="1596638140000">
         <span slot="name">我是标题</span>
       </haha>
   </div>
