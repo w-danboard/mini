@@ -36,7 +36,7 @@
           <div
             class="unit"
             :style="{'background':background}"
-            v-show="isShowUnit(index)" v-if="isShowTimeUnit(index)"
+            v-if="isShowTimeUnit(index)"
             :key="`unit-${index}`">
             {{setTimeUnit(index)}}
           </div>
@@ -188,15 +188,14 @@ export default {
     },
     /* 显示时间单位 */
     isShowTimeUnit (index) {
-      if (this.arr.includes(index)) {
-        return true
-      }
+      if (!this.formatter) return false
+      if (this.arr.includes(index)) return true
       return false
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
       let formatter = this.formatterTemp
-      let formatterObje = { d: '天', h: '时', m: '分', s: '秒' }
+      let formatterObj = { d: '天', h: '时', m: '分', s: '秒' }
       // 如果用户传入formatter为数组 则转换为对象
       if (Array.isArray(formatter)) {
         let [d, h, m, s] = formatter
@@ -206,7 +205,7 @@ export default {
         formatter['m'] = m || '分'
         formatter['s'] = s || '秒'
       } else {
-        formatter = Object.assign(formatterObje, formatter)
+        formatter = Object.assign(formatterObj, formatter)
       }
       let type = this.getType(this.type)
       /**
@@ -216,22 +215,22 @@ export default {
        *  所以在该情况时 重新把formatter 赋值为 { d: '天', h: '时', m: '分', s: '秒' }
        */
       if (this.formatter === true) {
-        formatter = formatterObje
+        formatter = formatterObj
       }
       // type === 5 的时候 证明用户传入type值为dd 也就是只显示天 (* 有时间需优化的点 *)
       if (type === 5) {
         let isTrue = this.timeArr.length - 1 === index
-        return isTrue ? formatter['d'] || '' : null
+        return isTrue ? formatter['d'] : null
       }
       switch (index) {
         case this.timeArr.length - 1 :
-          return formatter['s'] || '' // 秒
+          return formatter['s'] // 秒
         case this.timeArr.length - this.step - 1:
-          return formatter['m'] || '' // 分
+          return formatter['m'] // 分
         case this.timeArr.length - this.step * 2 - 1:
-          return formatter['h'] || '' // 时
+          return formatter['h'] // 时
         default:
-          return formatter['d'] || '' // 天
+          return formatter['d'] // 天
       }
     },
     /* 转换时间精度 */
@@ -259,13 +258,6 @@ export default {
           this.clearAllTimeout()
           return 4
       }
-    },
-    /* 判断是否显示单位 */
-    isShowUnit (index) {
-      if (this.formatter && this.setTimeUnit(index)) {
-        return true
-      }
-      return false
     },
     /* 启动定时器 */
     startTimer () {

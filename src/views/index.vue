@@ -17,7 +17,6 @@
     <haha
       name="我是标题啊"
       background="pink"
-      :formatter="['a', 'b']"
       :data="new Date().getTime() + 12000">
         <span slot="name">我是标题</span>
       </haha>
