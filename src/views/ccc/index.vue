@@ -2,7 +2,6 @@
 <template>
   <div class="idss-count-down">
     <div class="wrap">
-      <!-- separate样式是 props设置theme时显示的 也就是不分割 -->
       <div :class="['flex', {'separate': !theme}]">
         <div
           class="time-title"
@@ -10,7 +9,6 @@
           v-if="!!name || $slots.name">
           <slot name="name">{{name}}</slot>
         </div>
-        <!-- 假如theme是默认值false  timeArr也就是["0", "0", "0", "0", "0", "0", "0", "0"] -->
         <template v-for="(item, index) in timeArr">
           <div
             class="time-box"
@@ -51,7 +49,7 @@
  *
  *  @timeEnd: 倒计时结束之后的钩子
  */
-const TIME_TYPE = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss'] // 时间精准支持的类型
+let TIME_TYPE = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss'] // 时间精准支持的类型
 export default {
   name: 'idss-count-down',
   props: {
@@ -110,17 +108,43 @@ export default {
         return value
       }
     },
-    /* 主题 */
+    /* 主题 1为不分割展示 2为分割展示 */
     step () {
       return this.theme ? 1 : 2
     },
-    /* 时间单位 */
-    arr () {
+    /* 显示时间单位的位置 */
+    unitLocation () {
       const length = this.timeArr.length
       const step = this.step
+      const num = !this.isTypeError ? this.typesArr.length : 4
       const temp = [length - 1, length - step - 1, length - step * 2 - 1, length - step * 3 - 1]
-      temp.length = this.getType(this.type) > 1 ? this.getType(this.type) : 1
+      temp.length = num > 1 ? num : 1
       return temp
+    },
+    /* 时间精度, 根据传进的type时间精度，转换为数组。 例：[dd, hh, mm, ss] */
+    typesArr () {
+      return this.type.replace(/(\s|:)/g, ',').split(',')
+    },
+    /* 针对formatter组件单位，传入Array或Boolean类型，统一转换为Object类型输出 */
+    formatterObj () {
+      let initialValue = { d: '天', h: '时', m: '分', s: '秒' }   // 初始值
+      let formatter = {}
+      // 如果用户传入formatter为数组 则转换为对象
+      if (Array.isArray(this.formatter)) {
+        Object.keys(initialValue).forEach((item, index) => {
+          formatter[item] = this.formatter[index] || initialValue[item]
+        })
+      } else {
+        formatter = Object.assign(initialValue, this.formatter)
+      }
+      // 如果用户传入formatter为布尔 则转换为对象
+      if (this.formatter === true) formatter = initialValue
+      return formatter
+    },
+    /* 传入type值是否正确 */
+    isTypeError () {
+      let type = this.type.toLowerCase()
+      return !TIME_TYPE.includes(type)
     }
   },
   watch: {
@@ -136,15 +160,6 @@ export default {
     },
     /* 监听数据发生变化时 翻页效果 */
     timeArr (newV, oldV) {
-      /**
-       * 此处if判断的newV和oldV是否相等的原因如下
-       *    分割显示的情况如果数组长度变了比如之前是100天变成99天了
-       *    那timeArrT和isAnimate应该也有所改变
-       */
-      if (newV.length !== oldV.length) {
-        this.timeArrT = [...this.timeArr]
-        this.isAnimate = this.generatingArrays(this.timeArr.length, false)
-      }
       const diff = []
       newV.forEach((value, index) => {
         if (value !== oldV[index]) {
@@ -166,17 +181,12 @@ export default {
   },
   data () {
     return {
-      isTypeError: false, // 传入的type值是否正确
-      timeArr: [],  // 时间值
-      timeArrT: [], // 翻页的时间值 相当于赋值了一份timeArr 只是延迟350ms执行
-      isAnimate: [] // 翻页时的动画 初始都是false 翻页时为true
+      timeArr: [],         // 时间值
+      timeArrT: [],        // 翻页的时间值 相当于赋值了一份timeArr 只是延迟350ms执行
+      isAnimate: []        // 翻页时的动画 初始都是false 翻页时为true
     }
   },
   methods: {
-    /* 生成数组 */
-    generatingArrays (len, val) {
-      return new Array(len).fill(val)
-    },
     /* 开始倒计时 */
     init () {
       clearTimeout(this.timer)
@@ -188,72 +198,23 @@ export default {
     },
     /* 显示时间单位 */
     isShowTimeUnit (index) {
-      if (!this.formatter) return false
-      if (this.arr.includes(index)) return true
+      if (!this.formatter) return false // formatter为false时直接不显示所有单位
+      if (this.unitLocation.includes(index)) return true // 显示对应的单位
       return false
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
-      let formatter = JSON.parse(JSON.stringify(this.formatter))
-      let formatterObj = { d: '天', h: '时', m: '分', s: '秒' }
-      // 如果用户传入formatter为数组 则转换为对象
-      if (Array.isArray(formatter)) {
-        let [d, h, m, s] = formatter
-        formatter = {}
-        formatter['d'] = d || '天'
-        formatter['h'] = h || '时'
-        formatter['m'] = m || '分'
-        formatter['s'] = s || '秒'
-      } else {
-        formatter = Object.assign(formatterObj, formatter)
-      }
-      /**
-       * 此处if判断this.formatter的原因如下
-       *  formatter作为props传入值可传入 Array || Object || Boolean类型
-       *  如果使用组件的时候，手动把formatter 设置为true，就导致默认值 { d: '天', h: '时', m: '分', s: '秒' } 失效
-       *  所以在该情况时 重新把formatter 赋值为 { d: '天', h: '时', m: '分', s: '秒' }
-       */
-      if (this.formatter === true) {
-        formatter = formatterObj
-      }
-
-      let types = this.type.replace(/(\s|:)/g, ',').split(',')
-      types = types.map(item => item.slice(1))
+      let types = this.typesArr.map(item => item.slice(1))
       if (this.isTypeError) types = ['d', 'h', 'm', 's']
-      let typesLength = types.length
       switch (index) {
         case this.timeArr.length - 1 :
-          return formatter[types[typesLength - 1]]
+          return this.formatterObj[types[types.length - 1]]
         case this.timeArr.length - this.step - 1:
-          return formatter[types[typesLength - 2]]
+          return this.formatterObj[types[types.length - 2]]
         case this.timeArr.length - this.step * 2 - 1:
-          return formatter[types[typesLength - 3]]
+          return this.formatterObj[types[types.length - 3]]
         default:
-          return formatter[types[typesLength - 4]]
-      }
-    },
-    /* 转换时间精度 */
-    getType (type) {
-      type = type.toLowerCase()
-      if (this.isTypeError && TIME_TYPE.includes(type)) {
-        this.isTypeError = false
-        this.init()
-      }
-
-      if (type === 'dd hh:mm:ss') {
-        return 4
-      } else if (type === 'dd hh:mm' || type === 'hh:mm:ss') {
-        return 3
-      } else if (type === 'dd hh' || type === 'hh:mm' || type === 'mm:ss') {
-        return 2
-      } else if (type === 'dd' || type === 'hh' || type === 'mm' || type === 'ss') {
-        return 1
-      } else {
-        // 传入type类型错误
-        this.endTime = 0
-        this.isTypeError = true
-        this.clearAllTimeout()
-        return 4
+          return this.formatterObj[types[types.length - 4]]
       }
     },
     /* 启动定时器 */
@@ -268,10 +229,14 @@ export default {
       const hourT = minT * 60
       const dayT = hourT * 24
 
-      const types = this.type.replace(/(\s|:)/g, ',').split(',')
+      if (this.isTypeError) {
+        this.timeArr = this.theme ? new Array(4).fill('00') : arr = new Array(8).fill('0')
+        return
+      }
+
       let typeObj = {}
-      types.forEach(item => { typeObj[item] = item })
-      d = typeObj['dd'] ? d = Math.floor(t / dayT) : 0  // 天
+      this.typesArr.forEach(item => { typeObj[item] = item })
+      d = typeObj['dd'] ? d = Math.floor(t / dayT) : 0                    // 天
       h = typeObj['hh'] && typeObj['dd'] ? Math.floor(t / hourT % 24)     // 时
         : (typeObj['hh'] && !typeObj['dd'] ? Math.floor(t / hourT) : 0)
       m = typeObj['mm'] && typeObj['hh'] ? Math.floor(t / minT % 60)      // 分
@@ -279,21 +244,16 @@ export default {
       s = typeObj['ss'] && typeObj['mm'] ? Math.round(t / secT % 60)      // 秒
         : (typeObj['ss'] && !typeObj['mm'] ? Math.round(t / secT) : 0)
 
-      /* 判断主题 */
-      let arr = []
-      if (this.theme) {
-        typeObj['dd'] && arr.push(String(d).padStart(2, '0'))
-        typeObj['hh'] && arr.push(String(h).padStart(2, '0'))
-        typeObj['mm'] && arr.push(String(m).padStart(2, '0'))
-        typeObj['ss'] && arr.push(String(s).padStart(2, '0'))
-        if (!TIME_TYPE.includes(this.type)) arr = this.generatingArrays(4, '00')
-      } else {
-        typeObj['dd'] && arr.push(...String(d).padStart(2, '0').split(''))
-        typeObj['hh'] && arr.push(...String(h).padStart(2, '0').split(''))
-        typeObj['mm'] && arr.push(...String(m).padStart(2, '0').split(''))
-        typeObj['ss'] && arr.push(...String(s).padStart(2, '0').split(''))
-        if (!TIME_TYPE.includes(this.type)) arr = this.generatingArrays(8, '0')
+      /* 根据主题 计算timeArr长度 */
+      let timeObj = { 'dd': d, 'hh': h, 'mm': m, 'ss': s }
+      let calc = {
+        1: (str, unit) => arr.push(String(unit).padStart(2, '0')),
+        2: (str, unit) => arr.push(...String(unit).padStart(2, '0').split(''))
       }
+      let arr = []
+      this.typesArr.forEach(item => {
+        calc[this.step](item, timeObj[item])
+      })
       this.timeArr = arr
 
       /* 判断倒计时 是否结束 */
