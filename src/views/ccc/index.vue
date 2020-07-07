@@ -3,13 +3,12 @@
   <div class="idss-count-down">
     <div class="wrap">
       <!-- separate样式是 props设置theme时显示的 也就是不分割 -->
-      <div :class="['flex', {'separate': theme !== true}]">
+      <div :class="['flex', {'separate': !theme}]">
         <div
           class="time-title"
           :style="{'background':background}"
           v-if="!!name || $slots.name">
-          <span v-if="!$slots.name">{{name}}</span>
-          <slot name="name"></slot>
+          <slot name="name">{{name}}</slot>
         </div>
         <!-- 假如theme是默认值false  timeArr也就是["0", "0", "0", "0", "0", "0", "0", "0"] -->
         <template v-for="(item, index) in timeArr">
@@ -52,6 +51,7 @@
  *
  *  @timeEnd: 倒计时结束之后的钩子
  */
+const TIME_TYPE = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss'] // 时间精准支持的类型
 export default {
   name: 'idss-count-down',
   props: {
@@ -77,15 +77,14 @@ export default {
       type: Boolean,
       default: false
     },
-    // 时间精度 (* 此处待优化 期望优化后支持 'dd hh' & hh:mm & 'hh' & 'mm' 处理写法需灵活 目前相对于写死了 *)
+    // 时间精度
     type: {
       type: String,
       default: 'dd hh:mm:ss',
       validator (type) {
         type = type.toLowerCase()
-        let types = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss']
-        if (type && !types.includes(type)) {
-          console.error(`type类型必须为: ${types.join(' || ')}`)
+        if (type && !TIME_TYPE.includes(type)) {
+          console.error(`type类型必须为: ${TIME_TYPE.join(' || ')}`)
         }
         return true
       }
@@ -102,9 +101,9 @@ export default {
       get () {
         if (this.data instanceof Date) {
           if (!isNaN(this.data)) return this.data.getTime()
-            console.error(`传入截止时间格式有误。 请传入时间戳， 或参考此格式: new Date('2020-07-03 17:48:33')`)
-            return 0
-          }
+          console.error(`传入截止时间格式有误。 请传入时间戳， 或参考此格式: new Date('2020-07-03 17:48:33')`)
+          return 0
+        }
         return Number(this.data) > 0 ? Number(this.data) : 0
       },
       set (value) {
@@ -122,10 +121,6 @@ export default {
       const temp = [length - 1, length - step - 1, length - step * 2 - 1, length - step * 3 - 1]
       temp.length = this.getType(this.type) > 1 ? this.getType(this.type) : 1
       return temp
-    },
-    /* 组件单位处理 */
-    formatterTemp () {
-      return JSON.parse(JSON.stringify(this.formatter))
     }
   },
   watch: {
@@ -199,7 +194,7 @@ export default {
     },
     /* 设置时间单位 */
     setTimeUnit (index) {
-      let formatter = this.formatterTemp
+      let formatter = JSON.parse(JSON.stringify(this.formatter))
       let formatterObj = { d: '天', h: '时', m: '分', s: '秒' }
       // 如果用户传入formatter为数组 则转换为对象
       if (Array.isArray(formatter)) {
@@ -224,26 +219,23 @@ export default {
 
       let types = this.type.replace(/(\s|:)/g, ',').split(',')
       types = types.map(item => item.slice(1))
-      this.isTypeError ? types = ['d', 'h', 'm', 's'] : null
+      if (this.isTypeError) types = ['d', 'h', 'm', 's']
       let typesLength = types.length
-      console.log()
       switch (index) {
         case this.timeArr.length - 1 :
-          return formatter[types[typesLength-1]]
+          return formatter[types[typesLength - 1]]
         case this.timeArr.length - this.step - 1:
-          return formatter[types[typesLength-2]]
+          return formatter[types[typesLength - 2]]
         case this.timeArr.length - this.step * 2 - 1:
-          return formatter[types[typesLength-3]]
+          return formatter[types[typesLength - 3]]
         default:
-          return formatter[types[typesLength-4]]
+          return formatter[types[typesLength - 4]]
       }
     },
     /* 转换时间精度 */
     getType (type) {
-      console.log('调我了')
       type = type.toLowerCase()
-      let types = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss']
-      if (this.isTypeError && types.includes(type)) {
+      if (this.isTypeError && TIME_TYPE.includes(type)) {
         this.isTypeError = false
         this.init()
       }
@@ -278,30 +270,29 @@ export default {
 
       const types = this.type.replace(/(\s|:)/g, ',').split(',')
       let typeObj = {}
-      types.forEach(item => typeObj[item] = item)
+      types.forEach(item => { typeObj[item] = item })
       d = typeObj['dd'] ? d = Math.floor(t / dayT) : 0  // 天
       h = typeObj['hh'] && typeObj['dd'] ? Math.floor(t / hourT % 24)     // 时
-          : (typeObj['hh'] && !typeObj['dd'] ? Math.floor(t / hourT) : 0)
+        : (typeObj['hh'] && !typeObj['dd'] ? Math.floor(t / hourT) : 0)
       m = typeObj['mm'] && typeObj['hh'] ? Math.floor(t / minT % 60)      // 分
-          : (typeObj['mm'] && !typeObj['hh'] ? Math.floor(t / minT) : 0)
+        : (typeObj['mm'] && !typeObj['hh'] ? Math.floor(t / minT) : 0)
       s = typeObj['ss'] && typeObj['mm'] ? Math.round(t / secT % 60)      // 秒
-          : (typeObj['ss'] && !typeObj['mm'] ? Math.round(t / secT) : 0)
+        : (typeObj['ss'] && !typeObj['mm'] ? Math.round(t / secT) : 0)
 
       /* 判断主题 */
       let arr = []
-      let typeIncludes = ['dd', 'dd hh', 'dd hh:mm', 'dd hh:mm:ss', 'hh', 'hh:mm', 'hh:mm:ss', 'mm', 'mm:ss', 'ss']
       if (this.theme) {
-          typeObj['dd'] && arr.push(String(d).padStart(2, '0'))
-          typeObj['hh'] && arr.push(String(h).padStart(2, '0'))
-          typeObj['mm'] && arr.push(String(m).padStart(2, '0'))
-          typeObj['ss'] && arr.push(String(s).padStart(2, '0'))
-          !typeIncludes.includes(this.type)? arr = this.generatingArrays(4, '00') : null 
+        typeObj['dd'] && arr.push(String(d).padStart(2, '0'))
+        typeObj['hh'] && arr.push(String(h).padStart(2, '0'))
+        typeObj['mm'] && arr.push(String(m).padStart(2, '0'))
+        typeObj['ss'] && arr.push(String(s).padStart(2, '0'))
+        if (!TIME_TYPE.includes(this.type)) arr = this.generatingArrays(4, '00')
       } else {
-          typeObj['dd'] && arr.push(...String(d).padStart(2, '0').split(''))
-          typeObj['hh'] && arr.push(...String(h).padStart(2, '0').split(''))
-          typeObj['mm'] && arr.push(...String(m).padStart(2, '0').split(''))
-          typeObj['ss'] && arr.push(...String(s).padStart(2, '0').split(''))
-          !typeIncludes.includes(this.type) ? arr = this.generatingArrays(8, '0') : null 
+        typeObj['dd'] && arr.push(...String(d).padStart(2, '0').split(''))
+        typeObj['hh'] && arr.push(...String(h).padStart(2, '0').split(''))
+        typeObj['mm'] && arr.push(...String(m).padStart(2, '0').split(''))
+        typeObj['ss'] && arr.push(...String(s).padStart(2, '0').split(''))
+        if (!TIME_TYPE.includes(this.type)) arr = this.generatingArrays(8, '0')
       }
       this.timeArr = arr
 
