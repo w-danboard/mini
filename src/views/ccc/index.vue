@@ -182,7 +182,7 @@ export default {
   data () {
     return {
       timeArr: [],         // 时间值
-      timeArrT: [],        // 翻页的时间值 相当于赋值了一份timeArr 只是延迟350ms执行
+      timeArrT: [],        // 翻页的时间值 相当于复制了一份timeArr 只是延迟350ms执行
       isAnimate: []        // 翻页时的动画 初始都是false 翻页时为true
     }
   },
