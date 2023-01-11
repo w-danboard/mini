@@ -18,7 +18,7 @@
     "export-dirs": "^0.2.4",
     "express": "^4.17.1",
     "js-md5": "^0.7.3",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^5.9.15",
     "multer": "^1.4.2",
     "pm2": "^4.4.0",
